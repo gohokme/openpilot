@@ -123,13 +123,13 @@ Setting Menu
    - **Normal EYE Threshold:** set the value below threshold of your face recognition.
    - **Blink Threshold:** For Driver Monitoring. Set the value below the threshold of your eyes blink recognition. Driver Monitoring camera shows the values of your face recognition, eyes and the other things. Preview 'Driver Camera' and then check the recognition value of your eye blink to modify the value on menu.
    - **Navigation Select:** 
-      - Mappy (Korea)
+      - iNavi (Korea)
       - Waze (Global)
-   - **RUN Navigation on Boot:** Run your selected Mappy or Waze on boot. If it runs well, will go to background after few seconds.
+   - **RUN Navigation on Boot:** Run your selected iNavi or Waze on boot. If it runs well, will go to background after few seconds.
    - **Display Date on Screen:** shows the device date
    - **Display Time on Screen:** shows the device time
    - **API Server:** Choose driver log server
-      - Retropilot
+      - OPKR
       - Comma
       - User's
    - **User's API:** Set User driver log server url.
@@ -157,7 +157,7 @@ Setting Menu
       - Dist: distance only. 
       - Curv: curvature only. 
       - Oneway: change camera offset to approach the edge of a road. 
-      - CamSpeed: is changing set speed only by value of speed sign (OSM, Mappy).
+      - CamSpeed: is changing set speed only by value of speed sign (OSM, iNavi).
    - **LaneChange Speed:** minimum lane change speed
    - **LaneChange Delay:** adjust delay time before lane change
       - Nudge/Nudgeless/Set Seconds
@@ -206,7 +206,7 @@ Setting Menu
    - **Use FingerPrint 2.0:** (reboot required)
    - **Support WhitePanda:** Turn this on if you use WhitePanda. this is related to issue stopping processes when you turn device off.(reboot required)
    - **Set BatteryLess Eon:** Screen doesn't show information of battery status.
-   - **Turn Off Communication Issue Alarm:** Turn this on if you do not want alert of communication error. Sometimes you could get an alarm with error commuication issue. I don't know actually what error is. seems a bug or uncertain reason.
+   - **Turn Off Communication Issue Alarm:** Turn this on if you do not want alert of communication error. Sometimes you could get an commuication issue alert while using navi app or your custom UI is busy or rarely due to locationd(regarding GPS) process. I could use OP with the alert before without any issues. This is quite old issue. Currently I'm not sure if the error is still exist.
    - **Set LDWS Vehicles**
    - **Set DriveGear by Force:** for cars don't have dbc info of gear(reboot required)
    - **Ignore of Steering Warning:** Some cars have Steerwarning, so that not engaged.
