@@ -224,7 +224,6 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"SteerRatioAdj", PERSISTENT},
     {"SteerRatioMaxAdj", PERSISTENT},
     {"SteerActuatorDelayAdj", PERSISTENT},
-    {"SteerRateCostAdj", PERSISTENT},
     {"SteerLimitTimerAdj", PERSISTENT},
     {"TireStiffnessFactorAdj", PERSISTENT},
     {"SteerMaxAdj", PERSISTENT},
@@ -384,6 +383,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"StopAtStopSign", PERSISTENT},
     {"VarCruiseSpeedFactor", PERSISTENT},
     {"LanguageSetting", PERSISTENT},
+    {"OPKRSpeedBump", PERSISTENT},
 };
 
 } // namespace

@@ -897,6 +897,18 @@ public:
   }
 };
 
+class SpeedBumpDecelToggle : public ToggleControl {
+  Q_OBJECT
+
+public:
+  SpeedBumpDecelToggle() : ToggleControl(tr("SpeedBump Deceleration"), tr("Use the deceleration feature on the speed bump. It's an indirect control method. It can be decelerated directly in long control control, but for versatility, indirect control for now."), "../assets/offroad/icon_shell.png", Params().getBool("OPKRSpeedBump")) {
+    QObject::connect(this, &SpeedBumpDecelToggle::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("OPKRSpeedBump", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT
@@ -1280,20 +1292,20 @@ private:
   void refresh();
 };
 
-class SteerRateCost : public AbstractControl {
-  Q_OBJECT
+// class SteerRateCost : public AbstractControl {
+//   Q_OBJECT
 
-public:
-  SteerRateCost();
+// public:
+//   SteerRateCost();
 
-private:
-  QPushButton btnplus;
-  QPushButton btnminus;
-  QLabel label;
-  Params params;
+// private:
+//   QPushButton btnplus;
+//   QPushButton btnminus;
+//   QLabel label;
+//   Params params;
   
-  void refresh();
-};
+//   void refresh();
+// };
 
 class SteerLimitTimer : public AbstractControl {
   Q_OBJECT

@@ -85,7 +85,6 @@ def manager_init() -> None:
     ("SteerRatioAdj", "1550"),
     ("SteerRatioMaxAdj", "1750"),
     ("SteerActuatorDelayAdj", "20"),
-    ("SteerRateCostAdj", "35"),
     ("SteerLimitTimerAdj", "100"),
     ("TireStiffnessFactorAdj", "100"),
     ("SteerMaxBaseAdj", "384"),
@@ -230,6 +229,7 @@ def manager_init() -> None:
     ("StopAtStopSign", "0"),
     ("VarCruiseSpeedFactor", "0"),
     ("LanguageSetting", "main_en"),
+    ("OPKRSpeedBump", "0"),
    ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

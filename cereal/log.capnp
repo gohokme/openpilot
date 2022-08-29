@@ -593,6 +593,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   limitSpeedCameraDist @66 :Float32 = 0;
   steerRatio @67 :Float32;
   mapSign @68 :Float32;
+  mapSignCam @76 :Float32;
   dynamicTRMode @69 :UInt8;
   dynamicTRValue @70 :Float32;
   osmOffSpdLimit @71 :Bool;
@@ -1005,13 +1006,12 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
 
   # opkr
   outputScale @32 :Float32;
-  steerRateCost @33 :Float32;
-  standstillElapsedTime @34 :Float32;
-  vCruiseSet @35 :Float32;
-  vCurvature @36 :Float32;
-  lanelessMode @37 :Bool;
-  modelSpeed @38 :Float32;
-  totalCameraOffset @39 :Float32;
+  standstillElapsedTime @33 :Float32;
+  vCruiseSet @34 :Float32;
+  vCurvature @35 :Float32;
+  lanelessMode @36 :Bool;
+  modelSpeed @37 :Float32;
+  totalCameraOffset @38 :Float32;
 
   enum Desire {
     none @0;
@@ -1746,13 +1746,14 @@ struct LiveNaviData {
   speedLimit @0 :Int32;
   speedLimitDistance @1 :Float32;
   safetySign @2 :Int32;
-  roadCurvature @3 :Float32;
-  turnInfo @4 :Int32;
-  distanceToTurn @5 :Float32;
-  ts @6 :UInt64;
+  safetySignCam @3 :Int32;
+  roadCurvature @4 :Float32;
+  turnInfo @5 :Int32;
+  distanceToTurn @6 :Float32;
+  ts @7 :UInt64;
 
-  mapValid @7 :Bool;
-  mapEnable @8 :Int32;
+  mapValid @8 :Bool;
+  mapEnable @9 :Int32;
 }
 
 struct LiveMapDataDEPRECATED {

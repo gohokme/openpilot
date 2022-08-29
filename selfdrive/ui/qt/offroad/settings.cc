@@ -186,6 +186,7 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent) {
       btn->setEnabled(offroad);
     }
     resetCalibBtn->setEnabled(true);
+    translateBtn->setEnabled(true);
   });
 
   // power buttons
@@ -536,7 +537,6 @@ DrivingPanel::DrivingPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new RightCurvOffset());
   layout->addWidget(new BlindSpotDetectToggle());
 
-
   layout->addWidget(new CSteerWidget());
   
   layout->addWidget(new SteerAngleCorrection());
@@ -555,6 +555,7 @@ DrivingPanel::DrivingPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new VCurvSpeed());
   layout->addWidget(new OCurvSpeedUD());
   layout->addWidget(new OCurvSpeed());
+  layout->addWidget(new SpeedBumpDecelToggle());
   layout->addWidget(new AutoEnabledToggle());
   layout->addWidget(new AutoEnableSpeed());
   layout->addWidget(new CruiseAutoResToggle());
@@ -633,7 +634,7 @@ TuningPanel::TuningPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(horizontal_line());
 
   layout->addWidget(new SteerActuatorDelay());
-  layout->addWidget(new SteerRateCost());
+
   layout->addWidget(new TireStiffnessFactor());
   layout->addWidget(new SteerThreshold());
   layout->addWidget(new SteerLimitTimer());
