@@ -174,7 +174,7 @@ def manager_init() -> None:
     ("OSMCustomSpeedLimitC", "30,40,50,60,70,90"),
     ("OSMCustomSpeedLimitT", "30,40,65,72,80,95"),
     ("StockNaviSpeedEnabled", "0"),
-    ("OPKRNaviSelect", "2"),
+    ("OPKRNaviSelect", "3"),
     ("dp_atl", "1"),
     ("E2ELong", "0"),
     ("GoogleMapEnabled", "0"),
@@ -229,6 +229,7 @@ def manager_init() -> None:
     ("StopAtStopSign", "0"),
     ("VarCruiseSpeedFactor", "0"),
     ("LanguageSetting", "main_en"),
+    ("OPKRSpeedBump", "0"),
    ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

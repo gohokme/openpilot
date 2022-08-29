@@ -7,13 +7,15 @@
 
 #include "cereal/messaging/messaging.h"
 #include "selfdrive/common/util.h"
+#include "selfdrive/common/params.h"
 
 
 // atom
 typedef struct LiveNaviDataResult {
       int speedLimit;  // int;
       float speedLimitDistance;  // Float32;
-      int safetySign;    // int;
+      int safetySign = 0;    // int;
+      int safetySignCam = 0;    // int;
       float roadCurvature;    // Float32;
       int turnInfo;    // int;
       float distanceToTurn;    // Float32;
@@ -30,6 +32,7 @@ int main() {
   long  tv_nsec;
   float tv_nsec2;
   bool  sBump = false;
+  int   naviSel = std::stoi(Params().get("OPKRNaviSelect"));
 
   ExitHandler do_exit;
   PubMaster pm({"liveNaviData"});
@@ -93,16 +96,20 @@ int main() {
       {
         res.tv_sec = entry.tv_sec;
         res.tv_nsec = tv_nsec;
-        res.safetySign = atoi( entry.message );
-        if (res.safetySign == 124) {
+        res.safetySignCam = atoi( entry.message );
+        if (res.safetySignCam == 124 && naviSel == 1) {
           sBump = true;
         }
       }
-      else if( (res.speedLimitDistance > 1 && res.speedLimitDistance < 60) && (strcmp( entry.tag, "AudioFlinger" ) == 0) )  //   msm8974_platform
+      else if( strcmp( entry.tag, "opkrroadsigntype" ) == 0 )
+      {
+        res.safetySign = atoi( entry.message );
+      }
+      else if( naviSel == 1 && (res.speedLimitDistance > 1 && res.speedLimitDistance < 60) && (strcmp( entry.tag, "AudioFlinger" ) == 0) )  //   msm8974_platform
       {
         res.speedLimitDistance = 0;
         res.speedLimit = 0;
-        res.safetySign = 0;
+        res.safetySignCam = 0;
       }
       else if( strcmp( entry.tag, "opkrturninfo" ) == 0 )
       {
@@ -112,22 +119,28 @@ int main() {
       {
         res.distanceToTurn = atoi( entry.message );
       }
-      else if( nDelta_nsec > 5000 )
+      else if( nDelta_nsec > 60000 && naviSel == 0)
       {
-        if (res.safetySign == 197 && res.speedLimitDistance < 100) {
+        res.tv_sec = entry.tv_sec;
+        res.tv_nsec = tv_nsec;
+        // system("logcat -c &");
+      }
+      else if( nDelta_nsec > 5000 && naviSel == 1)
+      {
+        if (res.safetySignCam == 197 && res.speedLimitDistance < 100) {
           res.speedLimitDistance = 0;
           res.speedLimit = 0;
-          res.safetySign = 0;
+          res.safetySignCam = 0;
         }
-        else if ( res.safetySign == 124 && (!sBump) )
+        else if ( res.safetySignCam == 124 && (!sBump) )
         {
-          res.safetySign = 0;
+          res.safetySignCam = 0;
         }
-        else if (res.safetySign != 0 && res.safetySign != 124 && res.speedLimitDistance < 50 && res.speedLimitDistance > 0)
+        else if (res.safetySignCam != 0 && res.safetySignCam != 124 && res.speedLimitDistance < 50 && res.speedLimitDistance > 0)
         {
           res.speedLimitDistance = 0;
           res.speedLimit = 0;
-          res.safetySign = 0;
+          res.safetySignCam = 0;
         }
         else if( nDelta_nsec > 10000 )
         {
@@ -135,14 +148,15 @@ int main() {
           res.tv_nsec = tv_nsec;
           res.speedLimitDistance = 0;
           res.speedLimit = 0;
-          res.safetySign = 0;
-          //system("logcat -c &");
+          res.safetySignCam = 0;
+          // system("logcat -c &");
         }
       }
 
       framed.setSpeedLimit( res.speedLimit );  // int;
       framed.setSpeedLimitDistance( res.speedLimitDistance );  // raw_target_speed_map_dist Float32;
       framed.setSafetySign( res.safetySign ); // int;
+      framed.setSafetySignCam( res.safetySignCam ); // int;
       // framed.setRoadCurvature( res.roadCurvature ); // road_curvature Float32;
       framed.setTurnInfo( res.turnInfo );  // int;
       framed.setDistanceToTurn( res.distanceToTurn );  // Float32;
@@ -151,7 +165,39 @@ int main() {
       //framed.setMapValid( res.mapValid );
 
     /*
-    signtype
+    iNavi Road signtype
+    101 연속 커브
+    102 추돌주의
+    107 과속방지턱
+    5 이동식
+    105 낙석주의
+    15 고정식
+    10 합류
+    9 과적단속
+    111 철길건널목
+    18 이벤트 발생
+    203 녹색교통
+
+    iNavi Cam signtype
+    11, 12 구간단속
+    6 이동식단속
+    2 신호및속도단속
+    1 안전속도
+    3 신호위반단속
+    4, 7 버스전용차로 단속
+    5 교통량 측정
+    8 주차위반 단속
+    101 연속 커브
+    15 박스형카메라
+    16 스쿨존
+    18 실버존
+    118 야생동몰
+    20 차선변경금지
+    203 녹색교통
+    204 미끄럼주의
+
+
+    mappy signtype
     111 오른쪽 급커브
     112 왼쪽 급커브
     113 굽은도로
