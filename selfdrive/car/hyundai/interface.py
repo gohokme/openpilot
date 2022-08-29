@@ -125,6 +125,9 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.SANTAFE_TM:
       ret.mass = 1694. + STD_CARGO_KG
       ret.wheelbase = 2.765
+    elif candidate == CAR.SANTAFE_TM_2022:
+      ret.mass = 1694. + STD_CARGO_KG
+      ret.wheelbase = 2.765
     elif candidate == CAR.SANTAFE_HEV_TM:
       ret.mass = 1907. + STD_CARGO_KG
       ret.wheelbase = 2.765
@@ -161,6 +164,9 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.KONA_OS:
       ret.mass = 1325. + STD_CARGO_KG
       ret.wheelbase = 2.6
+    elif candidate == CAR.KONA_N_OS:
+      ret.mass = 1325. + STD_CARGO_KG
+      ret.wheelbase = 2.6
     elif candidate == CAR.KONA_HEV_OS:
       ret.mass = 1395. + STD_CARGO_KG
       ret.wheelbase = 2.6
@@ -194,6 +200,9 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.NEXO_FE:
       ret.mass = 1885. + STD_CARGO_KG
       ret.wheelbase = 2.79
+    elif candidate == CAR.MAXCRUZE:
+      ret.mass = 1885. + STD_CARGO_KG
+      ret.wheelbase = 2.90      
     # kia
     elif candidate == CAR.KIA_FORTE:
       ret.mass = 3558. * CV.LB_TO_KG
@@ -210,6 +219,9 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.K5_DL3:
       ret.wheelbase = 2.85
       ret.mass = 1450. + STD_CARGO_KG
+    elif candidate == CAR.K5_HEV_DL3:
+      ret.wheelbase = 2.85
+      ret.mass = 1450. + STD_CARGO_KG
     elif candidate == CAR.STINGER_CK:
       ret.mass = 1650. + STD_CARGO_KG
       ret.wheelbase = 2.905
@@ -222,12 +234,18 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.NIRO_HEV_DE:
       ret.mass = 1425. + STD_CARGO_KG
       ret.wheelbase = 2.7
+    elif candidate == CAR.NIRO_HEV_DE_2021:
+      ret.mass = 1425. + STD_CARGO_KG
+      ret.wheelbase = 2.7
     elif candidate == CAR.NIRO_EV_DE:
       ret.mass = 1755. + STD_CARGO_KG
       ret.wheelbase = 2.7
     elif candidate == CAR.K7_YG:
       ret.mass = 1565. + STD_CARGO_KG
       ret.wheelbase = 2.855
+    elif candidate == CAR.K7_YG_2020:
+      ret.mass = 1565. + STD_CARGO_KG
+      ret.wheelbase = 2.855      
     elif candidate == CAR.K7_HEV_YG:
       ret.mass = 1680. + STD_CARGO_KG
       ret.wheelbase = 2.855
