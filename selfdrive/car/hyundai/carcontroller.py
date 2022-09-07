@@ -172,6 +172,7 @@ class CarController():
     self.on_speed_bump_control = False
     self.curv_speed_control = False
     self.cut_in_control = False
+    self.driver_scc_set_control = False
     self.vFuture = 0
     self.vFutureA = 0
     self.cruise_init = False
@@ -184,8 +185,6 @@ class CarController():
     self.no_mdps_mods = self.params.get_bool("NoSmartMDPS")
 
     self.user_specific_feature = int(self.params.get("UserSpecificFeature", encoding="utf8"))
-    self.user_specific_feature_on = False
-    self.user_specific_prev_gap = 1.0
     self.gap_cnt = 0
 
     self.radar_disabled_conf = self.params.get_bool("RadarDisable")
@@ -205,6 +204,10 @@ class CarController():
     self.lkas_onoff_counter = 0
     self.lkas_temp_disabled = False
     self.lkas_temp_disabled_timer = 0
+
+    self.try_early_stop = self.params.get_bool("OPKREarlyStop")
+    self.try_early_stop_retrieve = False
+    self.try_early_stop_org_gap = 4.0
 
     self.str_log2 = 'MultiLateral'
     if CP.lateralTuning.which() == 'pid':
@@ -513,12 +516,13 @@ class CarController():
       self.on_speed_bump_control = self.NC.onSpeedBumpControl
       self.curv_speed_control = self.NC.curvSpeedControl
       self.cut_in_control = self.NC.cutInControl
+      self.driver_scc_set_control = self.NC.driverSccSetControl
       btn_signal = self.NC.update(CS, path_plan)
       if self.opkr_cruisegap_auto_adj:
         # gap restore
         if self.switch_timer > 0:
           self.switch_timer -= 1
-        elif self.dRel > 17 and self.vRel*3.6 < 5 and self.cruise_gap_prev != CS.cruiseGapSet and self.cruise_gap_set_init == 1 and self.opkr_autoresume:
+        elif self.dRel > 15 and self.vRel*3.6 < 5 and self.cruise_gap_prev != CS.cruiseGapSet and self.cruise_gap_set_init == 1 and self.opkr_autoresume:
           can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST)) if not self.longcontrol \
             else can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST, clu11_speed, CS.CP.sccBus))
           self.cruise_gap_adjusting = True
@@ -533,42 +537,68 @@ class CarController():
         else:
           self.cruise_gap_adjusting = False
       if not self.cruise_gap_adjusting:
-        if btn_signal != None:
+        if 0 < CS.lead_distance <= 149 and CS.lead_objspd < 0 and self.try_early_stop and CS.cruiseGapSet != 4.0 and CS.clu_Vanz > 35 and \
+         0 < self.sm['longitudinalPlan'].e2eX[12] < 100 and (self.sm['longitudinalPlan'].stopLine[12] < 100 or CS.lead_objspd < -7):
+          if not self.try_early_stop_retrieve:
+            self.try_early_stop_org_gap = CS.cruiseGapSet
+          self.try_early_stop_retrieve = True
+          if self.switch_timer > 0:
+            self.switch_timer -= 1
+          else:
+            can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST)) if not self.longcontrol \
+              else can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST, clu11_speed, CS.CP.sccBus))
+            self.resume_cnt += 1
+            if self.resume_cnt >= randint(6, 8):
+              self.resume_cnt = 0
+              self.switch_timer = randint(30, 36)
+        elif btn_signal != None:
           can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal)) if not self.longcontrol \
           else can_sends.append(create_clu11(self.packer, frame, CS.clu11, btn_signal, clu11_speed, CS.CP.sccBus))
           self.resume_cnt += 1
-        else:
-          self.resume_cnt = 0
-        if self.user_specific_feature == 60: # for D.Fyffe
+        elif 0 < CS.lead_distance <= 149 and not self.cruise_gap_set_init and self.try_early_stop and self.try_early_stop_retrieve and \
+         CS.cruiseGapSet != self.try_early_stop_org_gap and \
+         (CS.clu_Vanz <= 10 or (CS.lead_objspd >= 0 and self.sm['longitudinalPlan'].e2eX[12] > 60 and self.sm['longitudinalPlan'].stopLine[12] == 400 and CS.clu_Vanz > 10)):
           if self.switch_timer > 0:
             self.switch_timer -= 1
-          elif CS.cruiseGapSet != 2.0 and path_plan.laneChangeState != LaneChangeState.off:
+          else:
             can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST)) if not self.longcontrol \
               else can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST, clu11_speed, CS.CP.sccBus))
-            self.user_specific_feature_on = True
+            self.resume_cnt += 1
+            if self.resume_cnt >= randint(6, 8):
+              self.resume_cnt = 0
+              self.switch_timer = randint(30, 36)
+          if CS.cruiseGapSet == self.try_early_stop_org_gap:
+            self.try_early_stop_retrieve = False
+        else:
+          self.resume_cnt = 0
+        if self.user_specific_feature == 60 and not self.try_early_stop_retrieve and not self.cruise_gap_set_init: # for D.Fyffe
+          if self.switch_timer > 0:
+            self.switch_timer -= 1
+          elif CS.cruiseGapSet != 2.0 and CS.clu_Vanz > 60:
+            can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST)) if not self.longcontrol \
+              else can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST, clu11_speed, CS.CP.sccBus))
             self.gap_cnt += 1
             if self.gap_cnt >= randint(6, 8):
               self.gap_cnt = 0
               self.switch_timer = randint(30, 36)
-          elif self.user_specific_feature_on and path_plan.laneChangeState == LaneChangeState.off and CS.cruiseGapSet != self.user_specific_prev_gap:
+          elif CS.cruiseGapSet != 1.0 and 0 < CS.clu_Vanz <= 60:
             can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST)) if not self.longcontrol \
               else can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST, clu11_speed, CS.CP.sccBus))
             self.gap_cnt += 1
             if self.gap_cnt >= randint(6, 8):
               self.gap_cnt = 0
               self.switch_timer = randint(30, 36)
-          elif path_plan.laneChangeState == LaneChangeState.off:
-            self.user_specific_prev_gap = 1.0
-            self.user_specific_feature_on = False
     else:
       self.on_speed_control = False
       self.on_speed_bump_control = False
       self.curv_speed_control = False
       self.cut_in_control = False
+      self.driver_scc_set_control = False
       self.cruise_gap_adjusting = False
       self.standstill_res_button = False
       self.auto_res_starting = False
-      self.user_specific_feature_on = False
+      self.try_early_stop_retrieve = False
+      self.try_early_stop_org_gap = CS.cruiseGapSet
 
     if not enabled:
       self.cruise_init = False
@@ -577,6 +607,8 @@ class CarController():
       self.cancel_counter += 1
       self.auto_res_starting = False
       self.standstill_res_button = False
+      self.try_early_stop_retrieve = False
+      self.try_early_stop_org_gap = CS.cruiseGapSet
     elif CS.cruise_active:
       self.cruise_init = True
       self.cancel_counter = 0
@@ -833,8 +865,8 @@ class CarController():
                 accel = (aReqValue + accel) / 2
             elif aReqValue < 0 and accel > 0 and accel - aReqValue > 0.3 and lead_objspd > 0 and CS.out.vEgo < 11.:
               self.change_accel_fast = True
-            elif CS.lead_distance < 30.0 and aReqValue > 0.8 and lead_objspd > 0 and aReqValue - accel > 0.8:
-              accel = (aReqValue + accel) / 3
+            elif 0.1 < self.dRel < 6 and CS.lead_distance < 30.0 and lead_objspd > 0 and aReqValue - accel > 0.8: # in case radar detection works during vision breaking at stop.
+              accel = interp(aReqValue, [0.0, 1.8], [0.0, -0.7])
               self.change_accel_fast = False
             elif 0.1 < self.dRel <= 10.0 and CS.lead_distance - self.dRel >= 5.0 and aReqValue >= 0:
               self.change_accel_fast = False

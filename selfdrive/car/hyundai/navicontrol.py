@@ -41,6 +41,7 @@ class NaviControl():
     self.onSpeedBumpControl = False
     self.curvSpeedControl = False
     self.cutInControl = False
+    self.driverSccSetControl = False
     self.ctrl_speed = 0
     self.vision_curv_speed_c = list(map(int, Params().get("VCurvSpeedC", encoding="utf8").split(',')))
     self.vision_curv_speed_t = list(map(int, Params().get("VCurvSpeedT", encoding="utf8").split(',')))
@@ -72,6 +73,7 @@ class NaviControl():
       pass
 
     self.decel_on_speedbump = Params().get_bool("OPKRSpeedBump")
+    self.navi_sel = int(Params().get("OPKRNaviSelect", encoding="utf8"))
 
     self.na_timer = 0
     self.t_interval = 7
@@ -227,7 +229,7 @@ class NaviControl():
               self.onSpeedControl = True
             else:
               self.onSpeedControl = False
-      elif CS.map_enabled and self.liveNaviData.safetySign == 107 and self.decel_on_speedbump:  # speed bump decel. 60km/h 속도에서 코드 발생 후 과속방지턱까지 15초정도 소요
+      elif self.decel_on_speedbump and CS.map_enabled and ((self.liveNaviData.safetySign == 107 and self.navi_sel == 0) or (self.liveNaviData.safetySignCam == 124 and self.navi_sel == 1)):
         cruise_set_speed_kph == 20 if CS.is_set_speed_in_mph else 30
         self.onSpeedBumpControl = True
       elif CS.map_enabled and self.liveNaviData.speedLimit > 19 and self.liveNaviData.safetySignCam not in (4, 7, 16):  # navi app speedlimit
@@ -339,9 +341,11 @@ class NaviControl():
     self.lead_1 = self.sm['radarState'].leadTwo
     self.cut_in = True if self.lead_1.status and (self.lead_0.dRel - self.lead_1.dRel) > 3.0 else False
     self.cutInControl = False
+    self.driverSccSetControl = False
 
     if CS.driverAcc_time and CS.cruise_set_mode in (1,2,4):
       self.t_interval = 7
+      self.driverSccSetControl = True
       return min(CS.clu_Vanz + (3 if CS.is_set_speed_in_mph else 5), navi_speed)
     # elif self.gasPressed_old:
     #   clu_Vanz = CS.clu_Vanz
@@ -355,6 +359,9 @@ class NaviControl():
       if CS.out.brakeLights and CS.out.vEgo == 0:
         self.faststart = True
         var_speed = min(navi_speed, 30 if CS.is_set_speed_in_mph else 45)
+      elif ((self.lead_0.status and self.lead_0.dRel > 17) or not self.lead_0.status) and self.onSpeedBumpControl:
+        var_speed = min(navi_speed, 30 if CS.is_set_speed_in_mph else 45)
+        self.t_interval = int(interp(CS.out.vEgo, [9, 20], [20, 7])) if not (self.onSpeedControl or self.curvSpeedControl or self.cut_in) else 7
       elif self.faststart and CS.CP.vFuture <= 40:
         var_speed = min(navi_speed, 30 if CS.is_set_speed_in_mph else 45)
       elif self.lead_0.status and CS.CP.vFuture >= (min_control_speed-(4 if CS.is_set_speed_in_mph else 7)):

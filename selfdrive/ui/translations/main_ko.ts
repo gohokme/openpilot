@@ -553,7 +553,7 @@
     <message>
         <location filename="../qt/offroad/settings.cc" line="238"/>
         <source> Your device is pointed %1° %2 and %3° %4.</source>
-        <translation> 장치가 %1° %2 그리고 %3° %4에 위치하고 있습니다.</translation>
+        <translation> 장치가 %1° %2 그리고 %3° %4 위치하고 있습니다.</translation>
     </message>
     <message>
         <location filename="../qt/offroad/settings.cc" line="239"/>
@@ -1510,9 +1510,14 @@
         <translation>장치 화면 끄기 기능 사용 시, 자동 밝기 비율에 따라 밝기가 감소됩니다.</translation>
     </message>
     <message>
-        <location filename="../qt/widgets/opkr.cc" line="1237"/>
+        <location filename="../qt/widgets/opkr.cc" line="1236"/>
         <source>Dark</source>
         <translation>끄기</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="1238"/>
+        <source>MinBr</source>
+        <translation>최저</translation>
     </message>
 </context>
 <context>
@@ -1528,22 +1533,27 @@
         <translation>주행 시작 후 화면을 보호하기 위해 장치 화면을 끄거나 밝기를 줄이십시오. 터치나 이벤트가 발생하면 자동으로 밝아지거나 켜집니다.</translation>
     </message>
     <message>
-        <location filename="../qt/widgets/opkr.cc" line="1305"/>
+        <location filename="../qt/widgets/opkr.cc" line="1304"/>
         <source>AlwaysOn</source>
         <translation>항상켜기</translation>
     </message>
     <message>
-        <location filename="../qt/widgets/opkr.cc" line="1307"/>
+        <location filename="../qt/widgets/opkr.cc" line="1306"/>
+        <source>5secs</source>
+        <translation>5초</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="1308"/>
         <source>15secs</source>
         <translation>15초</translation>
     </message>
     <message>
-        <location filename="../qt/widgets/opkr.cc" line="1309"/>
+        <location filename="../qt/widgets/opkr.cc" line="1310"/>
         <source>30secs</source>
         <translation>30초</translation>
     </message>
     <message>
-        <location filename="../qt/widgets/opkr.cc" line="1311"/>
+        <location filename="../qt/widgets/opkr.cc" line="1312"/>
         <source>min(s)</source>
         <translation>분</translation>
     </message>
@@ -2583,13 +2593,18 @@
     </message>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="5869"/>
-        <source>Select the navigation you want to use.(iNavi/Waze/None)</source>
-        <translation>사용할 네비게이션을 선택합니다.(아이나비/웨이즈/없음)</translation>
+        <source>Select the navigation you want to use.(iNavi/Mappy/Waze/None)</source>
+        <translation>사용할 네비게이션을 선택합니다.(아이나비/맵피/웨이즈/없음)</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="5925"/>
+        <source>iNavi</source>
+        <translation>아이나비</translation>
     </message>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="5927"/>
-        <source>iNavi</source>
-        <translation>아이나비</translation>
+        <source>Mappy</source>
+        <translation>맵피</translation>
     </message>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="5929"/>
@@ -3951,6 +3966,19 @@
         <location filename="../qt/widgets/opkr.h" line="904"/>
         <source>Use the deceleration feature on the speed bump. It&apos;s an indirect control method. It can be decelerated directly in long control control, but for versatility, indirect control for now.</source>
         <translation>과속방지턱에서 감속기능을 사용합니다. 롱컨트롤제어에서는 직접적으로 감속가능하나 범용성을 위하여 현재는 간접제어방식(크루즈버튼)으로 합니다.</translation>
+    </message>
+</context>
+<context>
+    <name>OPKREarlyStoppingToggle</name>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="916"/>
+        <source>Early Slowdown with Gap</source>
+        <translation>크루즈갭 조기 감속기능 사용</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="916"/>
+        <source>This feature may help your vehicle to stop early using Cruise Gap with value 4 when your car start to stop from model.</source>
+        <translation>크루즈 갭을 이용해 모델 감속 신호 시 갭간격 4단계를 이용하여 조금 더 일찍 브레이킹을 시도할 수 있도록 합니다. 화면에 빨간색 신호가 들어오는 동안은 적용되며 상황 해제시 일정 조건에 의해 원래 갭으로 돌아갑니다.</translation>
     </message>
 </context>
 </TS>
