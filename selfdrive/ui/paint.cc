@@ -110,7 +110,7 @@ static void ui_draw_line(UIState *s, const line_vertices_data &vd, NVGcolor *col
   nvgFill(s->vg);
 }
 
-static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &lead_data, const vertex_data &vd, int leads) {
+static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &lead_data, const vertex_data &vd) {
   // Draw lead car indicator
   auto [x, y] = vd;
 
@@ -132,20 +132,12 @@ static void draw_lead(UIState *s, const cereal::RadarState::LeadData::Reader &le
   y = std::fmin(s->fb_h - sz * .6, y);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
 
-  if (leads == 1) {
-    if (s->scene.radarDistance < 149) {
-      draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);
-      ui_draw_text(s, x, y + sz/1.5f, "R", 60, COLOR_BLUE, "sans-bold"); //neokii
-    } else {
-      draw_chevron(s, x, y, sz, nvgRGBA(165, 255, 135, fillAlpha), COLOR_GREEN);
-      ui_draw_text(s, x, y + sz/1.5f, "V", 60, COLOR_BLACK, "sans-bold"); //hoya, vision
-    }
-  } else if (leads == 2) {
-    if (s->scene.radarDistance < 149) {
-      draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), COLOR_BLACK);
-    } else {
-      draw_chevron(s, x, y, sz, nvgRGBA(165, 255, 135, fillAlpha), COLOR_BLACK);
-    }
+  if (s->scene.radarDistance < 149) {
+    draw_chevron(s, x, y, sz, nvgRGBA(201, 34, 49, fillAlpha), COLOR_YELLOW);
+    ui_draw_text(s, x, y + sz/1.5f, "R", 60, COLOR_BLUE, "sans-bold"); //neokii
+  } else {
+    draw_chevron(s, x, y, sz, nvgRGBA(165, 255, 135, fillAlpha), COLOR_GREEN);
+    ui_draw_text(s, x, y + sz/1.5f, "V", 60, COLOR_BLACK, "sans-bold"); //hoya, vision
   }
 }
 
@@ -262,11 +254,10 @@ static void ui_draw_world(UIState *s) {
     auto lead_one = (*s->sm)["radarState"].getRadarState().getLeadOne();
     auto lead_two = (*s->sm)["radarState"].getRadarState().getLeadTwo();
     if (lead_one.getStatus()) {
-      draw_lead(s, lead_one, s->scene.lead_vertices[0], 1);
+      draw_lead(s, lead_one, s->scene.lead_vertices[0]);
     }
-    //if (lead_two.getStatus() && (std::abs(lead_one.getDRel() - lead_two.getDRel()) > 3.0)) {
-    if (lead_two.getStatus()) {
-      draw_lead(s, lead_two, s->scene.lead_vertices[1], 2);
+    if (lead_two.getStatus() && (std::abs(lead_one.getDRel() - lead_two.getDRel()) > 2.0)) {
+      draw_lead(s, lead_two, s->scene.lead_vertices[1]);
     }
     if (s->scene.stop_line && s->scene.longitudinalPlan.stopline[12] > 3.0) {
       auto stop_line = (*s->sm)["modelV2"].getModelV2().getStopLine();
@@ -357,7 +348,13 @@ static void ui_draw_debug(UIState *s) {
     // ui_print(s, ui_viz_rx, ui_viz_ry+520, "%s", stateStrings[(int)(*s->sm)["controlsState"].getControlsState().getState()].c_str());
     //ui_print(s, ui_viz_rx, ui_viz_ry+800, "A:%.5f", scene.accel_sensor2);
     if (!scene.nDebugUi3) {
-      if (scene.map_is_running) {
+      if (scene.navi_select == 3) {
+        if (scene.liveENaviData.eopkrsafetysign) ui_print(s, ui_viz_rx, ui_viz_ry+560, "CS:%d", scene.liveENaviData.eopkrsafetysign);
+        if (scene.liveENaviData.eopkrspeedlimit) ui_print(s, ui_viz_rx, ui_viz_ry+600, "SL:%d", scene.liveENaviData.eopkrspeedlimit);
+        if (scene.liveENaviData.eopkrsafetydist) ui_print(s, ui_viz_rx, ui_viz_ry+640, "DS:%.0f", scene.liveENaviData.eopkrsafetydist);
+        if (scene.liveENaviData.eopkrturninfo) ui_print(s, ui_viz_rx, ui_viz_ry+680, "TI:%d", scene.liveENaviData.eopkrturninfo);
+        if (scene.liveENaviData.eopkrdisttoturn) ui_print(s, ui_viz_rx, ui_viz_ry+720, "DT:%.0f", scene.liveENaviData.eopkrdisttoturn);
+      } else if (scene.map_is_running) {
         if (scene.liveNaviData.opkrroadsign) ui_print(s, ui_viz_rx, ui_viz_ry+560, "RS:%d", scene.liveNaviData.opkrroadsign);
         if (scene.liveNaviData.opkrspeedsign) ui_print(s, ui_viz_rx, ui_viz_ry+600, "CS:%d", scene.liveNaviData.opkrspeedsign);
         if (scene.liveNaviData.opkrspeedlimit) ui_print(s, ui_viz_rx, ui_viz_ry+640, "SL:%d", scene.liveNaviData.opkrspeedlimit);
@@ -370,31 +367,27 @@ static void ui_draw_debug(UIState *s) {
       }
     }
   if (scene.nDebugUi3) {
-    auto lead_one = (*s->sm)["radarState"].getRadarState().getLeadOne();
-    auto lead_two = (*s->sm)["radarState"].getRadarState().getLeadTwo();
-    ui_print(s, ui_viz_rx, ui_viz_ry+560, "LEAD1:%.1f", lead_one.getDRel());
-    ui_print(s, ui_viz_rx, ui_viz_ry+600, "LEAD2:%.1f", lead_two.getDRel());
-    // ui_print(s, ui_viz_rx, ui_viz_ry+560, "0: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
-    //  scene.longitudinalPlan.lead0[0], scene.longitudinalPlan.lead0[1], scene.longitudinalPlan.lead0[2], scene.longitudinalPlan.lead0[3], scene.longitudinalPlan.lead0[4],
-    //  scene.longitudinalPlan.lead0[5], scene.longitudinalPlan.lead0[6], scene.longitudinalPlan.lead0[7], scene.longitudinalPlan.lead0[8], scene.longitudinalPlan.lead0[9],
-    //  scene.longitudinalPlan.lead0[10], scene.longitudinalPlan.lead0[11], scene.longitudinalPlan.lead0[12]);
-    // ui_print(s, ui_viz_rx, ui_viz_ry+600, "1: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
-    //  scene.longitudinalPlan.lead1[0], scene.longitudinalPlan.lead1[1], scene.longitudinalPlan.lead1[2], scene.longitudinalPlan.lead1[3], scene.longitudinalPlan.lead1[4],
-    //  scene.longitudinalPlan.lead1[5], scene.longitudinalPlan.lead1[6], scene.longitudinalPlan.lead1[7], scene.longitudinalPlan.lead1[8], scene.longitudinalPlan.lead1[9],
-    //  scene.longitudinalPlan.lead1[10], scene.longitudinalPlan.lead1[11], scene.longitudinalPlan.lead1[12]);
-    // ui_print(s, ui_viz_rx, ui_viz_ry+640, "C: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
-    //  scene.longitudinalPlan.cruisetg[0], scene.longitudinalPlan.cruisetg[1], scene.longitudinalPlan.cruisetg[2], scene.longitudinalPlan.cruisetg[3], scene.longitudinalPlan.cruisetg[4],
-    //  scene.longitudinalPlan.cruisetg[5], scene.longitudinalPlan.cruisetg[6], scene.longitudinalPlan.cruisetg[7], scene.longitudinalPlan.cruisetg[8], scene.longitudinalPlan.cruisetg[9],
-    //  scene.longitudinalPlan.cruisetg[10], scene.longitudinalPlan.cruisetg[11], scene.longitudinalPlan.cruisetg[12]);
-    // ui_print(s, ui_viz_rx, ui_viz_ry+680, "X: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
-    //  scene.longitudinalPlan.e2ex[0], scene.longitudinalPlan.e2ex[1], scene.longitudinalPlan.e2ex[2], scene.longitudinalPlan.e2ex[3], scene.longitudinalPlan.e2ex[4],
-    //  scene.longitudinalPlan.e2ex[5], scene.longitudinalPlan.e2ex[6], scene.longitudinalPlan.e2ex[7], scene.longitudinalPlan.e2ex[8], scene.longitudinalPlan.e2ex[9],
-    //  scene.longitudinalPlan.e2ex[10], scene.longitudinalPlan.e2ex[11], scene.longitudinalPlan.e2ex[12]);
-    // ui_print(s, ui_viz_rx, ui_viz_ry+720, "S: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
-    //  scene.longitudinalPlan.stopline[0], scene.longitudinalPlan.stopline[1], scene.longitudinalPlan.stopline[2], scene.longitudinalPlan.stopline[3], scene.longitudinalPlan.stopline[4],
-    //  scene.longitudinalPlan.stopline[5], scene.longitudinalPlan.stopline[6], scene.longitudinalPlan.stopline[7], scene.longitudinalPlan.stopline[8], scene.longitudinalPlan.stopline[9],
-    //  scene.longitudinalPlan.stopline[10], scene.longitudinalPlan.stopline[11], scene.longitudinalPlan.stopline[12]);
-    // ui_print(s, ui_viz_rx, ui_viz_ry+760, "P:%.1f", scene.longitudinalPlan.stopprob);
+    ui_print(s, ui_viz_rx, ui_viz_ry+560, "0: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
+     scene.longitudinalPlan.lead0[0], scene.longitudinalPlan.lead0[1], scene.longitudinalPlan.lead0[2], scene.longitudinalPlan.lead0[3], scene.longitudinalPlan.lead0[4],
+     scene.longitudinalPlan.lead0[5], scene.longitudinalPlan.lead0[6], scene.longitudinalPlan.lead0[7], scene.longitudinalPlan.lead0[8], scene.longitudinalPlan.lead0[9],
+     scene.longitudinalPlan.lead0[10], scene.longitudinalPlan.lead0[11], scene.longitudinalPlan.lead0[12]);
+    ui_print(s, ui_viz_rx, ui_viz_ry+600, "1: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
+     scene.longitudinalPlan.lead1[0], scene.longitudinalPlan.lead1[1], scene.longitudinalPlan.lead1[2], scene.longitudinalPlan.lead1[3], scene.longitudinalPlan.lead1[4],
+     scene.longitudinalPlan.lead1[5], scene.longitudinalPlan.lead1[6], scene.longitudinalPlan.lead1[7], scene.longitudinalPlan.lead1[8], scene.longitudinalPlan.lead1[9],
+     scene.longitudinalPlan.lead1[10], scene.longitudinalPlan.lead1[11], scene.longitudinalPlan.lead1[12]);
+    ui_print(s, ui_viz_rx, ui_viz_ry+640, "C: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
+     scene.longitudinalPlan.cruisetg[0], scene.longitudinalPlan.cruisetg[1], scene.longitudinalPlan.cruisetg[2], scene.longitudinalPlan.cruisetg[3], scene.longitudinalPlan.cruisetg[4],
+     scene.longitudinalPlan.cruisetg[5], scene.longitudinalPlan.cruisetg[6], scene.longitudinalPlan.cruisetg[7], scene.longitudinalPlan.cruisetg[8], scene.longitudinalPlan.cruisetg[9],
+     scene.longitudinalPlan.cruisetg[10], scene.longitudinalPlan.cruisetg[11], scene.longitudinalPlan.cruisetg[12]);
+    ui_print(s, ui_viz_rx, ui_viz_ry+680, "X: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
+     scene.longitudinalPlan.e2ex[0], scene.longitudinalPlan.e2ex[1], scene.longitudinalPlan.e2ex[2], scene.longitudinalPlan.e2ex[3], scene.longitudinalPlan.e2ex[4],
+     scene.longitudinalPlan.e2ex[5], scene.longitudinalPlan.e2ex[6], scene.longitudinalPlan.e2ex[7], scene.longitudinalPlan.e2ex[8], scene.longitudinalPlan.e2ex[9],
+     scene.longitudinalPlan.e2ex[10], scene.longitudinalPlan.e2ex[11], scene.longitudinalPlan.e2ex[12]);
+    ui_print(s, ui_viz_rx, ui_viz_ry+720, "S: %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
+     scene.longitudinalPlan.stopline[0], scene.longitudinalPlan.stopline[1], scene.longitudinalPlan.stopline[2], scene.longitudinalPlan.stopline[3], scene.longitudinalPlan.stopline[4],
+     scene.longitudinalPlan.stopline[5], scene.longitudinalPlan.stopline[6], scene.longitudinalPlan.stopline[7], scene.longitudinalPlan.stopline[8], scene.longitudinalPlan.stopline[9],
+     scene.longitudinalPlan.stopline[10], scene.longitudinalPlan.stopline[11], scene.longitudinalPlan.stopline[12]);
+    ui_print(s, ui_viz_rx, ui_viz_ry+760, "P:%.1f", scene.longitudinalPlan.stopprob);
   }
     nvgFontSize(s->vg, 50);
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
@@ -492,9 +485,9 @@ static void ui_draw_vision_maxspeed_org(UIState *s) {
   float cruise_speed = round(s->scene.vSetDis);
   const bool is_cruise_set = maxspeed != 0 && maxspeed != SET_SPEED_NA;
   if (s->scene.cruiseAccStatus) {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.ctrl_speed+1.5);
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 21 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.ctrl_speed+1.5);
   } else {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.limitSpeedCamera+1.5);
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 21 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.limitSpeedCamera+1.5);
   }
   //if (is_cruise_set && !s->scene.is_metric) { maxspeed *= 0.6225; }
 
@@ -502,7 +495,7 @@ static void ui_draw_vision_maxspeed_org(UIState *s) {
   NVGcolor color = COLOR_BLACK_ALPHA(100);
   if (s->scene.is_speed_over_limit) {
     color = COLOR_OCHRE_ALPHA(100);
-  } else if (s->scene.limitSpeedCamera > 19 && !s->scene.is_speed_over_limit) {
+  } else if (s->scene.limitSpeedCamera > 21 && !s->scene.is_speed_over_limit) {
     color = nvgRGBA(0, 120, 0, 100);
   } else if (s->scene.cruiseAccStatus) {
     color = nvgRGBA(0, 100, 200, 100);
@@ -555,9 +548,9 @@ static void ui_draw_vision_cruise_speed(UIState *s) {
   //if (is_cruise_set && !s->scene.is_metric) { maxspeed *= 0.6225; }
   float cruise_speed = round(s->scene.vSetDis);
   if (s->scene.cruiseAccStatus) {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.ctrl_speed+1.5);
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 21 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.ctrl_speed+1.5);
   } else {
-    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 19 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.limitSpeedCamera+1.5);
+    s->scene.is_speed_over_limit = s->scene.limitSpeedCamera > 21 && ((s->scene.car_state.getVEgo() * (s->scene.is_metric ? 3.6 : 2.2369363)) > s->scene.limitSpeedCamera+1.5);
   }
 
   const Rect rect = {bdr_s, bdr_s, 184, 202};
@@ -565,7 +558,7 @@ static void ui_draw_vision_cruise_speed(UIState *s) {
   NVGcolor color = COLOR_GREY;
   if (s->scene.is_speed_over_limit) {
     color = COLOR_OCHRE_ALPHA(200);
-  } else if (s->scene.limitSpeedCamera > 19 && !s->scene.is_speed_over_limit) {
+  } else if (s->scene.limitSpeedCamera > 21 && !s->scene.is_speed_over_limit) {
     color = nvgRGBA(0, 120, 0, 200);
   } else if (s->scene.cruiseAccStatus) {
     color = nvgRGBA(0, 100, 200, 200);
@@ -576,7 +569,7 @@ static void ui_draw_vision_cruise_speed(UIState *s) {
   ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 10, 20.);
 
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-  if (s->scene.limitSpeedCamera > 19 && s->scene.limitSpeedCamera <= round(maxspeed)) {
+  if (s->scene.limitSpeedCamera > 21 && s->scene.limitSpeedCamera <= round(maxspeed)) {
     ui_draw_text(s, rect.centerX(), bdr_s+65, "LIMIT", 26 * 2.5, COLOR_WHITE_ALPHA(s->scene.cruiseAccStatus ? 200 : 100), "sans-regular");
   } else if (is_cruise_set) {
     const std::string maxspeed_str = std::to_string((int)std::nearbyint(maxspeed));
@@ -586,7 +579,7 @@ static void ui_draw_vision_cruise_speed(UIState *s) {
   }
 
   const std::string cruise_speed_str = std::to_string((int)std::nearbyint(cruise_speed));
-  if (s->scene.controls_state.getEnabled() && !s->scene.cruiseAccStatus && s->scene.limitSpeedCamera > 19) {
+  if (s->scene.controls_state.getEnabled() && !s->scene.cruiseAccStatus && s->scene.limitSpeedCamera > 21) {
     const std::string limitspeedcamera_str = std::to_string((int)std::nearbyint(limitspeedcamera));
     ui_draw_text(s, rect.centerX(), bdr_s+165, limitspeedcamera_str.c_str(), 48 * 2.5, COLOR_WHITE, "sans-bold");
   } else if (cruise_speed >= 20 && s->scene.controls_state.getEnabled()) {
@@ -703,8 +696,8 @@ static void ui_draw_vision_event(UIState *s) {
   const int viz_event_x = s->fb_w - (viz_event_w + bdr_s);
   const int viz_event_y = bdr_s;
 
-  if ((s->scene.liveNaviData.opkrroadsign == 107 || s->scene.liveNaviData.opkrspeedsign == 124) && !s->scene.comma_stock_ui) {
-    ui_draw_image(s, {s->fb_w/2 - 500/2, s->fb_h/2 - 500/2, 500, 500}, "speed_bump", 0.35f);
+  if ((s->scene.liveNaviData.opkrroadsign == 107 || s->scene.liveNaviData.opkrspeedsign == 124 || s->scene.liveENaviData.eopkrsafetysign == 22) && !s->scene.comma_stock_ui) {
+    ui_draw_image(s, {s->fb_w/2 - 500/2, s->fb_h/2 - 450/2, 500, 450}, "speed_bump", 0.35f);
   }
 
   // draw steering wheel
@@ -1311,7 +1304,7 @@ static void draw_safetysign(UIState *s) {
     }
   }
 
-  if (safety_speed > 19 && !s->scene.comma_stock_ui) {
+  if (safety_speed > 21 && !s->scene.comma_stock_ui) {
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
     if (s->scene.speedlimit_signtype) {
       ui_fill_rect(s->vg, rect_si, COLOR_WHITE_ALPHA(200/sl_opacity), 16.);
@@ -1417,7 +1410,7 @@ static void draw_navi_button(UIState *s) {
   nvgStrokeWidth(s->vg, 6);
   nvgStroke(s->vg);
   nvgFontSize(s->vg, 55);
-  if (s->scene.map_is_running) {
+  if (s->scene.map_is_running || s->scene.liveENaviData.eopkrconalive) {
     NVGcolor fillColor = nvgRGBA(0,0,255,80);
     nvgFillColor(s->vg, fillColor);
     nvgFill(s->vg);
@@ -1429,7 +1422,11 @@ static void draw_navi_button(UIState *s) {
     nvgFontSize(s->vg, 48);
     nvgText(s->vg,btn_xc1,btn_yc+17,"Search",NULL);
   } else {
-    nvgText(s->vg,btn_xc1,btn_yc,"NAVI",NULL);
+    if (s->scene.liveENaviData.eopkrconalive) {
+      nvgText(s->vg,btn_xc1,btn_yc,"TMAP",NULL);
+    } else {
+      nvgText(s->vg,btn_xc1,btn_yc,"NAVI",NULL);
+    }
   }
 }
 
@@ -1534,7 +1531,7 @@ static void ui_draw_vision_header(UIState *s) {
     }
     draw_safetysign(s);
     draw_compass(s);
-    if (s->scene.navi_select == 0 || s->scene.navi_select == 1 || s->scene.navi_select == 2 || s->scene.mapbox_running) {
+    if (s->scene.navi_select == 0 || s->scene.navi_select == 1 || s->scene.navi_select == 2 || s->scene.navi_select == 3 || s->scene.mapbox_running) {
       draw_navi_button(s);
     }
     if (s->scene.end_to_end) {
