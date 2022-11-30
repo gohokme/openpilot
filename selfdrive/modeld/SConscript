@@ -43,13 +43,12 @@ if arch == "aarch64" or arch == "larch64":
 else:
   libs += ['pthread']
 
-  if not GetOption('snpe'):
-    # for onnx support
-    common_src += ['runners/onnxmodel.cc']
+  # for onnx support
+  common_src += ['runners/onnxmodel.cc']
 
-    # tell runners to use onnx
-    lenv['CFLAGS'].append("-DUSE_ONNX_MODEL")
-    lenv['CXXFLAGS'].append("-DUSE_ONNX_MODEL")
+  # tell runners to use onnx
+  lenv['CFLAGS'].append("-DUSE_ONNX_MODEL")
+  lenv['CXXFLAGS'].append("-DUSE_ONNX_MODEL")
 
   if arch == "Darwin":
     # fix OpenCL
@@ -67,21 +66,21 @@ common_model = lenv.Object(common_src)
 if use_thneed and arch in ("aarch64", "larch64"):
   fn = File("models/supercombo").abspath
   compiler = lenv.Program('thneed/compile', ["thneed/compile.cc"]+common_model, LIBS=libs)
-  cmd = f"cd {Dir('.').abspath} && {compiler[0].abspath} {fn}.dlc {fn}_badweights.thneed --binary"
+  cmd = f"cd {Dir('.').abspath} && {compiler[0].abspath} {fn}.onnx {fn}_badweights.thneed --binary"
 
   lib_paths = ':'.join(Dir(p).abspath for p in lenv["LIBPATH"])
   kernel_path = os.path.join(Dir('.').abspath, "thneed", "kernels")
   cenv = Environment(ENV={'LD_LIBRARY_PATH': f"{lib_paths}:{lenv['ENV']['LD_LIBRARY_PATH']}", 'KERNEL_PATH': kernel_path})
 
   kernels = [os.path.join(kernel_path, x) for x in os.listdir(kernel_path) if x.endswith(".cl")]
-  cenv.Command(fn + "_badweights.thneed", [fn + ".dlc", kernels, compiler], cmd)
+  cenv.Command(fn + "_badweights.thneed", [fn + ".onnx", kernels, compiler], cmd)
 
   from selfdrive.modeld.thneed.weights_fixup import weights_fixup
   def weights_fixup_action(target, source, env):
     weights_fixup(target[0].abspath, source[0].abspath, source[1].abspath)
 
   env = Environment(BUILDERS = {'WeightFixup' : Builder(action = weights_fixup_action)})
-  env.WeightFixup(target=fn + ".thneed", source=[fn+"_badweights.thneed", fn+".dlc"])
+  env.WeightFixup(target=fn + ".thneed", source=[fn+"_badweights.thneed", fn+".onnx"])
 
 
 lenv.Program('_dmonitoringmodeld', [

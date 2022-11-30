@@ -68,8 +68,8 @@ def load_onnx_weights(fn):
   return onnx_layers
 
 def weights_fixup(target, source_thneed, dlc):
-  #onnx_layers = load_onnx_weights(os.path.join(BASEDIR, "models/supercombo.onnx"))
-  onnx_layers = load_dlc_weights(dlc)
+  onnx_layers = load_onnx_weights(os.path.join(BASEDIR, "models/supercombo.onnx"))
+  #onnx_layers = load_dlc_weights(dlc)
   jdat = load_thneed(source_thneed)
 
   bufs = {}
@@ -143,4 +143,4 @@ if __name__ == "__main__":
   model_dir = os.path.join(BASEDIR, "selfdrive/modeld/models/")
   weights_fixup(os.path.join(model_dir, "supercombo_fixed.thneed"),
                 os.path.join(model_dir, "supercombo.thneed"),
-                os.path.join(model_dir, "supercombo.dlc"))
+                os.path.join(model_dir, "supercombo.onnx"))
