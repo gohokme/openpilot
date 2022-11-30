@@ -1927,8 +1927,8 @@ LaneChangeSpeed::LaneChangeSpeed() : AbstractControl(tr("LaneChange On/Off/Spd")
   QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("OpkrLaneChangeSpeed"));
     int value = str.toInt();
-    value = value + 1;
-    if (value >= 101) {
+    value = value + 5;
+    if (value >= 160) {
       value = 0;
     }
     QString values = QString::number(value);
