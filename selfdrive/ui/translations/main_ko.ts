@@ -105,17 +105,17 @@
 <context>
     <name>OffroadHome</name>
     <message>
-        <location filename="../qt/home.cc" line="568"/>
+        <location filename="../qt/home.cc" line="587"/>
         <source>UPDATE</source>
         <translation>업데이트</translation>
     </message>
     <message>
-        <location filename="../qt/home.cc" line="659"/>
+        <location filename="../qt/home.cc" line="678"/>
         <source>ALERTS</source>
         <translation>경고</translation>
     </message>
     <message>
-        <location filename="../qt/home.cc" line="659"/>
+        <location filename="../qt/home.cc" line="678"/>
         <source>ALERT</source>
         <translation>경고</translation>
     </message>
@@ -706,6 +706,12 @@
         <location filename="../qt/offroad/settings.cc" line="317"/>
         <source>Local and remote match. No update required.</source>
         <translation>로컬과 원격 커밋이 일치합니다. 업데이트가 필요 없습니다.</translation>
+    </message>
+    <message>
+        <location filename="../qt/offroad/settings.cc" line="325"/>
+        <location filename="../qt/offroad/settings.cc" line="336"/>
+        <source>Device will be updated and rebooted. Do you want to proceed?</source>
+        <translation>장치가 업데이트 되고 재부팅 됩니다. 진행하시겠습니까?</translation>
     </message>
     <message>
         <location filename="../qt/offroad/settings.cc" line="344"/>
@@ -3987,6 +3993,32 @@
     </message>
 </context>
 <context>
+    <name>TorqueUseAngle</name>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="928"/>
+        <source>UseAngle</source>
+        <translation>스티어각 기반 제어</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="928"/>
+        <source>Use Steer Angle On/Off</source>
+        <translation>토크 사용시 스티어링 각도 기반 제어를 사용합니다.</translation>
+    </message>
+</context>
+<context>
+    <name>DepartChimeAtResume</name>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="940"/>
+        <source>Depart Chime at Resume</source>
+        <translation>출발 신호 알림</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="940"/>
+        <source>Use Chime for Resume. This can notify for you to get start while not using SCC.</source>
+        <translation>SCC 사용중이 아닐 때 앞차가 출발하거나 신호가 녹색신호로 바뀔때 알림을 보냅니다.</translation>
+    </message>
+</context>
+<context>
     <name>ExternalDeviceIP</name>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="8130"/>
@@ -4013,5 +4045,51 @@
         <source>Seperate with (,) for multiple IP</source>
         <translation>여러개 IP 설정시 (,)로 구분하세요</translation>
     </message>
-    </context>
+</context>
+<context>
+    <name>DoNotDisturbMode</name>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="8169"/>
+        <source>DoNotDisturb Mode</source>
+        <translation>방해금지 모드</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="8169"/>
+        <source>Off Event notification, Screen and Sound of Device. You can enable this touching Left-Top Box like a button on onroad screen.</source>
+        <translation>운전 중 화면 및 소리를 선택적으로 끕니다. 좌측 상단 박스를 터치하면 알림 메세지가 나타나고 기능을 실행하며 다시 박스를 터치하면 꺼집니다.(토글기능)</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="8227"/>
+        <source>NotUse</source>
+        <translation>사용안함</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="8230"/>
+        <source>SCROffOnly</source>
+        <translation>화면만끄기</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="8233"/>
+        <source>SNDOffOnly</source>
+        <translation>소리만끄기</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="8236"/>
+        <source>BothOff</source>
+        <translation>둘다끄기</translation>
+    </message>
+</context>
+<context>
+    <name>CruiseGapBySpdOn</name>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="952"/>
+        <source>Cruise Gap Change by Speed</source>
+        <translation>속도 기반 크루즈갭 사용</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="952"/>
+        <source>Cruise Gap is changeable by vehicle speed.</source>
+        <translation>차량속도에 따른 크루즈갭 변경기능을 사용합니다.(변경 임계속도값 근처 버퍼(5km/h) 적용 포함)</translation>
+    </message>
+</context>
 </TS>

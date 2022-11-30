@@ -1915,9 +1915,9 @@ LaneChangeSpeed::LaneChangeSpeed() : AbstractControl(tr("LaneChange On/Off/Spd")
   QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("OpkrLaneChangeSpeed"));
     int value = str.toInt();
-    value = value - 5;
+    value = value - 1;
     if (value <= -1) {
-      value = 155;
+      value = 100;
     }
     QString values = QString::number(value);
     params.put("OpkrLaneChangeSpeed", values.toStdString());
@@ -1927,8 +1927,8 @@ LaneChangeSpeed::LaneChangeSpeed() : AbstractControl(tr("LaneChange On/Off/Spd")
   QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
     auto str = QString::fromStdString(params.get("OpkrLaneChangeSpeed"));
     int value = str.toInt();
-    value = value + 5;
-    if (value >= 155) {
+    value = value + 1;
+    if (value >= 101) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -8164,4 +8164,383 @@ ExternalDeviceIP::ExternalDeviceIP() : AbstractControl(tr("ExternalDevIP"), tr("
 void ExternalDeviceIP::refresh() {
   auto strs = QString::fromStdString(params.get("ExternalDeviceIP"));
   edit.setText(QString::fromStdString(strs.toStdString()));
+}
+
+DoNotDisturbMode::DoNotDisturbMode() : AbstractControl(tr("DoNotDisturb Mode"), tr("Off Event notification, Screen and Sound of Device. You can enable this touching Left-Top Box like a button on onroad screen."), "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  btnminus.setText("◀");
+  btnplus.setText("▶");
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("DoNotDisturbMode"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= -1) {
+      value = 3;
+    }
+    QString values = QString::number(value);
+    params.put("DoNotDisturbMode", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("DoNotDisturbMode"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 4) {
+      value = 0;
+    }
+    QString values = QString::number(value);
+    params.put("DoNotDisturbMode", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void DoNotDisturbMode::refresh() {
+  QString option = QString::fromStdString(params.get("DoNotDisturbMode"));
+  if (option == "0") {
+    label.setText(tr("NotUse"));
+    QUIState::ui_state.scene.do_not_disturb_mode = 0;
+  } else if (option == "1") {
+    label.setText(tr("SCROffOnly"));
+    QUIState::ui_state.scene.do_not_disturb_mode = 1;
+  } else if (option == "2") {
+    label.setText(tr("SNDOffOnly"));
+    QUIState::ui_state.scene.do_not_disturb_mode = 2;
+  } else {
+    label.setText(tr("BothOff"));
+    QUIState::ui_state.scene.do_not_disturb_mode = 3;
+  }
+}
+
+CruiseGapBySpd::CruiseGapBySpd() : AbstractControl("", "", "") {
+  label1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  label1.setStyleSheet("color: #e0e879");
+  label2.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  label2.setStyleSheet("color: #e0e879");
+  label3.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  label3.setStyleSheet("color: #e0e879");
+  btn1.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 50px;
+    font-weight: 500;
+    color: #e0e879;
+    background-color: #808080;
+  )");
+  btn2.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 50px;
+    font-weight: 500;
+    color: #e0e879;
+    background-color: #808080;
+  )");
+  btn3.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 50px;
+    font-weight: 500;
+    color: #e0e879;
+    background-color: #808080;
+  )");
+  btn4.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 50px;
+    font-weight: 500;
+    color: #e0e879;
+    background-color: #808080;
+  )");
+  btnminus1.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus1.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus2.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus2.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus3.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus3.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus1.setFixedSize(70, 100);
+  btnplus1.setFixedSize(70, 100);
+  btnminus2.setFixedSize(70, 100);
+  btnplus2.setFixedSize(70, 100);
+  btnminus3.setFixedSize(70, 100);
+  btnplus3.setFixedSize(70, 100);
+  btn1.setFixedSize(90, 100);
+  btn2.setFixedSize(90, 100);
+  btn3.setFixedSize(90, 100);
+  btn4.setFixedSize(90, 100);
+
+  hlayout->addWidget(&btn1);
+  hlayout->addWidget(&btnminus1);
+  hlayout->addWidget(&label1);
+  hlayout->addWidget(&btnplus1);
+  hlayout->addWidget(&btn2);
+  hlayout->addWidget(&btnminus2);
+  hlayout->addWidget(&label2);
+  hlayout->addWidget(&btnplus2);
+  hlayout->addWidget(&btn3);
+  hlayout->addWidget(&btnminus3);
+  hlayout->addWidget(&label3);
+  hlayout->addWidget(&btnplus3);
+  hlayout->addWidget(&btn4);
+
+  btnminus1.setText("－");
+  btnplus1.setText("＋");
+  btnminus2.setText("－");
+  btnplus2.setText("＋");
+  btnminus3.setText("－");
+  btnplus3.setText("＋");
+
+  QObject::connect(&btn1, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdGap")).split(",");
+    int value = list[0].toInt();
+    value = value + 1;
+    if (value >= 5) {
+      value = 1;
+    }
+    QString values = QString::number(value);
+    list[0] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdGap", str.toStdString());
+    refresh1();
+  });
+
+  QObject::connect(&btn2, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdGap")).split(",");
+    int value = list[1].toInt();
+    value = value + 1;
+    if (value >= 5) {
+      value = 1;
+    }
+    QString values = QString::number(value);
+    list[1] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdGap", str.toStdString());
+    refresh2();
+  });
+
+  QObject::connect(&btn3, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdGap")).split(",");
+    int value = list[2].toInt();
+    value = value + 1;
+    if (value >= 5) {
+      value = 1;
+    }
+    QString values = QString::number(value);
+    list[2] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdGap", str.toStdString());
+    refresh3();
+  });
+
+  QObject::connect(&btn4, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdGap")).split(",");
+    int value = list[3].toInt();
+    value = value + 1;
+    if (value >= 5) {
+      value = 1;
+    }
+    QString values = QString::number(value);
+    list[3] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdGap", str.toStdString());
+    refresh4();
+  });
+
+  QObject::connect(&btnminus1, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+    int value = list[0].toInt();
+    value = value - 5;
+    if (value <= 0) {
+      value = 0;
+    }
+    QString values = QString::number(value);
+    list[0] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdSpd", str.toStdString());
+    refresh5();
+  });
+
+  QObject::connect(&btnplus1, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+    int value = list[0].toInt();
+    int valuem = list[1].toInt();
+    value = value + 5;
+    if (value >= (valuem - 5)) {
+      value = valuem - 5;
+    }
+    QString values = QString::number(value);
+    list[0] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdSpd", str.toStdString());
+    refresh5();
+  });
+
+  QObject::connect(&btnminus2, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+    int value = list[1].toInt();
+    int valuem = list[0].toInt();
+    value = value - 5;
+    if (value <= (valuem + 5)) {
+      value = valuem + 5;
+    }
+    QString values = QString::number(value);
+    list[1] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdSpd", str.toStdString());
+    refresh6();
+  });
+
+  QObject::connect(&btnplus2, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+    int value = list[1].toInt();
+    int valuem = list[2].toInt();
+    value = value + 5;
+    if (value >= (valuem - 5)) {
+      value = valuem - 5;
+    }
+    QString values = QString::number(value);
+    list[1] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdSpd", str.toStdString());
+    refresh6();
+  });
+
+  QObject::connect(&btnminus3, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+    int value = list[2].toInt();
+    int valuem = list[1].toInt();
+    value = value - 5;
+    if (value <= (valuem + 5)) {
+      value = valuem + 5;
+    }
+    QString values = QString::number(value);
+    list[2] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdSpd", str.toStdString());
+    refresh7();
+  });
+
+  QObject::connect(&btnplus3, &QPushButton::clicked, [=]() {
+    QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+    int value = list[2].toInt();
+    value = value + 5;
+    if (value >= 160) {
+      value = 160;
+    }
+    QString values = QString::number(value);
+    list[2] = values;
+    QString str = list.join(",");
+    params.put("CruiseGapBySpdSpd", str.toStdString());
+    refresh7();
+  });
+
+  refresh1();
+  refresh2();
+  refresh3();
+  refresh4();
+  refresh5();
+  refresh6();
+  refresh7();
+}
+
+void CruiseGapBySpd::refresh1() {
+  QStringList list = QString::fromStdString(params.get("CruiseGapBySpdGap")).split(",");
+  btn1.setText(list[0]);
+}
+
+void CruiseGapBySpd::refresh2() {
+  QStringList list = QString::fromStdString(params.get("CruiseGapBySpdGap")).split(",");
+  btn2.setText(list[1]);
+}
+
+void CruiseGapBySpd::refresh3() {
+  QStringList list = QString::fromStdString(params.get("CruiseGapBySpdGap")).split(",");
+  btn3.setText(list[2]);
+}
+
+void CruiseGapBySpd::refresh4() {
+  QStringList list = QString::fromStdString(params.get("CruiseGapBySpdGap")).split(",");
+  btn4.setText(list[3]);
+}
+
+void CruiseGapBySpd::refresh5() {
+  QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+  label1.setText(list[0]);
+}
+
+void CruiseGapBySpd::refresh6() {
+  QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+  label2.setText(list[1]);
+}
+
+void CruiseGapBySpd::refresh7() {
+  QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
+  label3.setText(list[2]);
 }

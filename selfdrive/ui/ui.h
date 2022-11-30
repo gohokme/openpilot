@@ -116,6 +116,7 @@ typedef enum UIStatus {
   STATUS_ENGAGED,
   STATUS_WARNING,
   STATUS_ALERT,
+  STATUS_DND,
 } UIStatus;
 
 const QColor bg_colors [] = {
@@ -123,6 +124,7 @@ const QColor bg_colors [] = {
   [STATUS_ENGAGED] = QColor(0x17, 0x86, 0x44, 0x96),
   [STATUS_WARNING] = QColor(0xDA, 0x6F, 0x25, 0x96),
   [STATUS_ALERT] = QColor(0xC9, 0x22, 0x31, 0x96),
+  [STATUS_DND] = QColor(0x32, 0x32, 0x32, 0x96),
 };
 
 typedef struct {
@@ -201,7 +203,7 @@ typedef struct UIScene {
   int recording_quality;
   bool monitoring_mode;
   bool forceGearD;
-  bool comma_stock_ui, opkr_livetune_ui;
+  bool opkr_livetune_ui;
   bool driving_record;
   float steer_actuator_delay;
   bool batt_less;
@@ -252,6 +254,9 @@ typedef struct UIScene {
   int gear_step;
   float charge_meter;
   float multi_lat_selected;
+  int do_not_disturb_mode;
+  bool depart_chime_at_resume;
+  int comma_stock_ui;
 
   cereal::DeviceState::Reader deviceState;
   cereal::CarState::Reader car_state;
