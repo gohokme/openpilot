@@ -120,6 +120,7 @@ class Controls:
     self.no_mdps_mods = params.get_bool('NoSmartMDPS')
 
     self.cruise_road_limit_spd_switch = True
+    self.cruise_road_limit_spd_switch_prev = 0
 
     # detect sound card presence and ensure successful init
     sounds_available = HARDWARE.get_sound_card_online()
@@ -243,6 +244,7 @@ class Controls:
     self.v_cruise_kph_set_timer = 0
     self.safety_speed = 0
     self.lkas_temporary_off = False
+    self.gap_by_spd_on_temp = True
     try:
       self.roadname_and_slc = Params().get("RoadList", encoding="utf8").strip().splitlines()[1].split(',')
     except:
@@ -543,11 +545,15 @@ class Controls:
     if not self.CP.pcmCruise:
       self.v_cruise_kph = update_v_cruise(self.v_cruise_kph, CS.buttonEvents, self.enabled)
     elif self.CP.pcmCruise and CS.cruiseState.enabled:
+      if self.cruise_road_limit_spd_enabled and not self.cruise_road_limit_spd_switch and self.cruise_road_limit_spd_switch_prev != 0 and self.cruise_road_limit_spd_switch_prev != self.sm['liveENaviData'].roadLimitSpeed:
+        self.cruise_road_limit_spd_switch = True
+        self.cruise_road_limit_spd_switch_prev = 0
+
       if self.variable_cruise and CS.cruiseState.modeSel != 0 and self.CP.vCruisekph > t_speed:
         self.v_cruise_kph = self.CP.vCruisekph
         self.v_cruise_kph_last = self.v_cruise_kph
       elif CS.cruiseButtons == Buttons.RES_ACCEL and self.variable_cruise and CS.cruiseState.modeSel != 0 and CS.vSetDis < (self.v_cruise_kph_last - 1):
-        self.cruise_road_limit_spd_switch = True
+        self.cruise_road_limit_spd_switch = False
         self.v_cruise_kph_set_timer = 30
         self.v_cruise_kph = self.v_cruise_kph_last
         if round(CS.vSetDis)-1 > self.v_cruise_kph:
@@ -557,7 +563,7 @@ class Controls:
           self.osm_off_spdlimit_init = True
           self.osm_speedlimit = round(self.sm['liveMapData'].speedLimit)
       elif CS.cruiseButtons == Buttons.RES_ACCEL and self.variable_cruise and CS.cruiseState.modeSel != 0 and t_speed <= self.v_cruise_kph_last <= round(CS.vEgo*m_unit):
-        self.cruise_road_limit_spd_switch = True
+        self.cruise_road_limit_spd_switch = False
         self.v_cruise_kph_set_timer = 30
         self.v_cruise_kph = round(CS.vEgo*m_unit)
         if round(CS.vSetDis)-1 > self.v_cruise_kph:
@@ -567,13 +573,17 @@ class Controls:
           self.osm_off_spdlimit_init = True
           self.osm_speedlimit = round(self.sm['liveMapData'].speedLimit)
       elif (CS.cruiseButtons == Buttons.RES_ACCEL and not self.v_cruise_kph_set_timer) or CS.cruiseButtons == Buttons.SET_DECEL:
-        self.cruise_road_limit_spd_switch = True
+        if CS.cruiseButtons == Buttons.SET_DECEL:
+          self.cruise_road_limit_spd_switch = True
+        elif CS.cruiseButtons == Buttons.RES_ACCEL:
+          self.cruise_road_limit_spd_switch = False
         self.v_cruise_kph = round(CS.cruiseState.speed * m_unit)
         self.v_cruise_kph_last = self.v_cruise_kph
         if self.osm_speedlimit_enabled:
           self.osm_off_spdlimit_init = True
           self.osm_speedlimit = round(self.sm['liveMapData'].speedLimit)
       elif CS.driverAcc and self.variable_cruise and (self.cruise_over_maxspeed or self.cruise_road_limit_spd_enabled) and t_speed <= self.v_cruise_kph < round(CS.vEgo*m_unit):
+        self.cruise_road_limit_spd_switch_prev = self.sm['liveENaviData'].roadLimitSpeed
         self.cruise_road_limit_spd_switch = False
         self.v_cruise_kph = round(CS.vEgo*m_unit)
         self.v_cruise_kph_last = self.v_cruise_kph
@@ -884,13 +894,13 @@ class Controls:
           self.hkg_stock_lkas_timer = 0
       if not self.hkg_stock_lkas:
         # send car controls over can
-        self.last_actuators, can_sends, self.safety_speed, self.lkas_temporary_off = self.CI.apply(CC)
+        self.last_actuators, can_sends, self.safety_speed, self.lkas_temporary_off, self.gap_by_spd_on_temp = self.CI.apply(CC)
         self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
         CC.actuatorsOutput = self.last_actuators
     else:
       if not self.read_only and self.initialized:
         # send car controls over can
-        self.last_actuators, can_sends, self.safety_speed, self.lkas_temporary_off = self.CI.apply(CC)
+        self.last_actuators, can_sends, self.safety_speed, self.lkas_temporary_off, self.gap_by_spd_on_temp = self.CI.apply(CC)
         self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
         CC.actuatorsOutput = self.last_actuators
 
@@ -969,6 +979,7 @@ class Controls:
     controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
     controlsState.accel = float(self.last_actuators.accel)
     controlsState.safetySpeed = float(self.safety_speed)
+    controlsState.gapBySpeedOn = bool(self.gap_by_spd_on_temp)
 
     lat_tuning = self.CP.lateralTuning.which()
     if self.joystick_mode:
