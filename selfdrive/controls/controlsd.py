@@ -244,6 +244,7 @@ class Controls:
     self.v_cruise_kph_set_timer = 0
     self.safety_speed = 0
     self.lkas_temporary_off = False
+    self.gap_by_spd_on_temp = True
     try:
       self.roadname_and_slc = Params().get("RoadList", encoding="utf8").strip().splitlines()[1].split(',')
     except:
@@ -893,13 +894,13 @@ class Controls:
           self.hkg_stock_lkas_timer = 0
       if not self.hkg_stock_lkas:
         # send car controls over can
-        self.last_actuators, can_sends, self.safety_speed, self.lkas_temporary_off = self.CI.apply(CC)
+        self.last_actuators, can_sends, self.safety_speed, self.lkas_temporary_off, self.gap_by_spd_on_temp = self.CI.apply(CC)
         self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
         CC.actuatorsOutput = self.last_actuators
     else:
       if not self.read_only and self.initialized:
         # send car controls over can
-        self.last_actuators, can_sends, self.safety_speed, self.lkas_temporary_off = self.CI.apply(CC)
+        self.last_actuators, can_sends, self.safety_speed, self.lkas_temporary_off, self.gap_by_spd_on_temp = self.CI.apply(CC)
         self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
         CC.actuatorsOutput = self.last_actuators
 
@@ -978,6 +979,7 @@ class Controls:
     controlsState.dynamicTRValue = float(self.sm['longitudinalPlan'].dynamicTRValue)
     controlsState.accel = float(self.last_actuators.accel)
     controlsState.safetySpeed = float(self.safety_speed)
+    controlsState.gapBySpeedOn = bool(self.gap_by_spd_on_temp)
 
     lat_tuning = self.CP.lateralTuning.which()
     if self.joystick_mode:

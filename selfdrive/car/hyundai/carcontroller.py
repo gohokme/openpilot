@@ -442,13 +442,13 @@ class CarController():
         if self.gap_by_spd_on_sw:
           self.gap_by_spd_on_sw = False
           self.gap_by_spd_on_sw_cnt += 1
-          if self.gap_by_spd_on_sw_cnt > 1: #temporary disable of auto gap if you press gap button 2 times quickly.
+          if self.gap_by_spd_on_sw_cnt > 4: #temporary disable of auto gap if you press gap button 5 times quickly.
             self.gap_by_spd_on_sw_trg = not self.gap_by_spd_on_sw_trg
             self.gap_by_spd_on_sw_cnt = 0
             self.gap_by_spd_on_sw_cnt2 = 0
         elif self.gap_by_spd_on_sw_cnt:
           self.gap_by_spd_on_sw_cnt2 += 1
-          if self.gap_by_spd_on_sw_cnt2 > 50:
+          if self.gap_by_spd_on_sw_cnt2 > 20:
             self.gap_by_spd_on_sw_cnt = 0
             self.gap_by_spd_on_sw_cnt2 = 0
     else:
@@ -544,7 +544,7 @@ class CarController():
           self.cruise_gap_prev = CS.cruiseGapSet
           self.cruise_gap_set_init = True
         # gap adjust to 1 for fast start
-        elif 110 < self.standstill_fault_reduce_timer and CS.cruiseGapSet != 1.0 and self.opkr_autoresume and self.opkr_cruisegap_auto_adj and not self.gap_by_spd_on:
+        elif 110 < self.standstill_fault_reduce_timer and CS.cruiseGapSet != 1.0 and self.opkr_autoresume and self.opkr_cruisegap_auto_adj and (not self.gap_by_spd_on or not self.gap_by_spd_on_sw_trg):
           can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST)) if not self.longcontrol \
             else can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.GAP_DIST, clu11_speed, CS.CP.sccBus))
           self.resume_cnt += 1
@@ -567,7 +567,7 @@ class CarController():
       self.cut_in_control = self.NC.cutInControl
       self.driver_scc_set_control = self.NC.driverSccSetControl
       btn_signal = self.NC.update(CS, path_plan)
-      if self.opkr_cruisegap_auto_adj and not self.gap_by_spd_on:
+      if self.opkr_cruisegap_auto_adj and (not self.gap_by_spd_on or not self.gap_by_spd_on_sw_trg):
         # gap restore
         if self.switch_timer > 0:
           self.switch_timer -= 1
@@ -586,7 +586,7 @@ class CarController():
         else:
           self.cruise_gap_adjusting = False
       if not self.cruise_gap_adjusting:
-        if not self.gap_by_spd_on:
+        if not self.gap_by_spd_on or not self.gap_by_spd_on_sw_trg:
           if 0 < CS.lead_distance <= 149 and CS.lead_objspd < 0 and self.try_early_stop and CS.cruiseGapSet != 4.0 and CS.clu_Vanz > 30 and \
            0 < self.sm['longitudinalPlan'].e2eX[12] < 120 and (self.sm['longitudinalPlan'].stopLine[12] < 100 or CS.lead_objspd < -4):
             if not self.try_early_stop_retrieve:
@@ -1185,7 +1185,7 @@ class CarController():
       # self.to_avoid_lkas_fault_max_frame = int(self.params.get("AvoidLKASFaultMaxFrame", encoding="utf8"))
       # self.e2e_long_enabled = self.params.get_bool("E2ELong")
       # self.stopsign_enabled = self.params.get_bool("StopAtStopSign")
-      self.gap_by_spd_on = self.params.get_bool("CruiseGapBySpdOn")
+      # self.gap_by_spd_on = self.params.get_bool("CruiseGapBySpdOn")
       if self.params.get_bool("OpkrLiveTunePanelEnable"):
         if CS.CP.lateralTuning.which() == 'pid':
           self.str_log2 = 'T={:0.2f}/{:0.3f}/{:0.1f}/{:0.5f}'.format(float(Decimal(self.params.get("PidKp", encoding="utf8"))*Decimal('0.01')), \
@@ -1220,4 +1220,4 @@ class CarController():
 
     self.lkas11_cnt += 1
 
-    return new_actuators, can_sends, safetycam_speed, self.lkas_temp_disabled
+    return new_actuators, can_sends, safetycam_speed, self.lkas_temp_disabled, (self.gap_by_spd_on_sw_trg and self.gap_by_spd_on)
