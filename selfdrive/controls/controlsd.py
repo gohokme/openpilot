@@ -552,7 +552,7 @@ class Controls:
         self.v_cruise_kph = self.CP.vCruisekph
         self.v_cruise_kph_last = self.v_cruise_kph
       elif CS.cruiseButtons == Buttons.RES_ACCEL and self.variable_cruise and CS.cruiseState.modeSel != 0 and CS.vSetDis < (self.v_cruise_kph_last - 1):
-        self.cruise_road_limit_spd_switch = True
+        self.cruise_road_limit_spd_switch = False
         self.v_cruise_kph_set_timer = 30
         self.v_cruise_kph = self.v_cruise_kph_last
         if round(CS.vSetDis)-1 > self.v_cruise_kph:
@@ -562,7 +562,7 @@ class Controls:
           self.osm_off_spdlimit_init = True
           self.osm_speedlimit = round(self.sm['liveMapData'].speedLimit)
       elif CS.cruiseButtons == Buttons.RES_ACCEL and self.variable_cruise and CS.cruiseState.modeSel != 0 and t_speed <= self.v_cruise_kph_last <= round(CS.vEgo*m_unit):
-        self.cruise_road_limit_spd_switch = True
+        self.cruise_road_limit_spd_switch = False
         self.v_cruise_kph_set_timer = 30
         self.v_cruise_kph = round(CS.vEgo*m_unit)
         if round(CS.vSetDis)-1 > self.v_cruise_kph:
@@ -572,7 +572,10 @@ class Controls:
           self.osm_off_spdlimit_init = True
           self.osm_speedlimit = round(self.sm['liveMapData'].speedLimit)
       elif (CS.cruiseButtons == Buttons.RES_ACCEL and not self.v_cruise_kph_set_timer) or CS.cruiseButtons == Buttons.SET_DECEL:
-        self.cruise_road_limit_spd_switch = True
+        if CS.cruiseButtons == Buttons.SET_DECEL:
+          self.cruise_road_limit_spd_switch = True
+        elif CS.cruiseButtons == Buttons.RES_ACCEL:
+          self.cruise_road_limit_spd_switch = False
         self.v_cruise_kph = round(CS.cruiseState.speed * m_unit)
         self.v_cruise_kph_last = self.v_cruise_kph
         if self.osm_speedlimit_enabled:
