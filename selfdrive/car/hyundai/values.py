@@ -50,6 +50,7 @@ class CAR:
   TUCSON_TL = "HYUNDAI TUCSON (TL)"
   NEXO_FE = "HYUNDAI NEXO (FE)"
   MAXCRUZE = "HYUNDAI MAXCRUZE"
+  CASPER = "HTUNDAI CASPER (AX1)"
   # KIA
   KIA_FORTE = "KIA FORTE E 2018 & GT 2021"  
   K3_BD = "KIA K3 (BD)"
@@ -115,6 +116,7 @@ CAR_INFO: Dict[str, Union[HyundaiCarInfo, List[HyundaiCarInfo]]] = {
   CAR.TUCSON_TL: HyundaiCarInfo("Hyundai Tucson", "All"),
   CAR.NEXO_FE: HyundaiCarInfo("Hyundai Nexo", "All"),
   CAR.MAXCRUZE : HyundaiCarInfo("Hyundai Maxcruze", "All"),
+  CAR.CASPER : HyundaiCarInfo("Hyundai Casper", "All"),
   # Kia
   CAR.KIA_FORTE: [
     HyundaiCarInfo("Kia Forte 2018", harness=Harness.hyundai_b),
@@ -345,7 +347,9 @@ FINGERPRINTS = {
     },{
     127: 8, 145: 8, 146: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 512: 6, 544: 8, 546: 8, 593: 8, 688: 5, 832: 8, 881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 905: 8, 908: 8, 909: 8, 912: 7, 916: 8, 1056: 8, 1057: 8, 1078: 4, 1136: 8, 1151: 8, 1155: 8, 1156: 8, 1157: 4, 1162: 8, 1164: 8, 1168: 7, 1173: 8, 1174: 8, 1180: 8, 1183: 8, 1186: 2, 1191: 2, 1192: 8, 1193: 8, 1210: 8, 1219: 8, 1220: 8, 1222: 6, 1223: 8, 1224: 8, 1227: 8, 1230: 6, 1231: 6, 1265: 4, 1268: 8, 1280: 1, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1297: 8, 1298: 8, 1305: 8, 1312: 8, 1315: 8, 1316: 8, 1322: 8, 1324: 8, 1342: 6, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1371: 8, 1407: 8, 1419: 8, 1427: 6, 1429: 8, 1430: 8, 1437: 8, 1456: 4, 1460: 8, 1470: 8, 1484: 8, 1507: 8, 1520: 8, 1535: 8
   }],
-
+  CAR.CASPER: [{
+  }],  
+  
   # kia
   CAR.K3_BD: [{
     67: 8, 127: 8, 304: 8, 320: 8, 339: 8, 356: 4, 544: 8, 593: 8, 608: 8, 688: 5, 809: 8, 832: 8, 854: 7, 870: 7, 871: 8, 872: 8, 897: 8, 902: 8, 903: 8, 909: 8, 916: 8, 1040: 8, 1042: 8, 1078: 4, 1107: 5, 1136: 8, 1156: 8, 1170: 8, 1173: 8, 1191: 2, 1225: 8, 1265: 4, 1280: 4, 1287: 4, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1363: 8, 1369: 8, 1384: 8, 1394: 8, 1407: 8, 1427: 6, 1456: 4, 1470: 8
@@ -851,7 +855,8 @@ if Params().get_bool("UseRadarTrack"):
     CAR.TUCSON_TL: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.NEXO_FE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.MAXCRUZE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
-    
+    CAR.CASPER: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),    
+
     # kia
     CAR.KIA_FORTE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),    
     CAR.K3_BD: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
@@ -908,6 +913,7 @@ else:
     CAR.TUCSON_TL: dbc_dict('hyundai_kia_generic', None),
     CAR.NEXO_FE: dbc_dict('hyundai_kia_generic', None),
     CAR.MAXCRUZE: dbc_dict('hyundai_kia_generic', None),
+    CAR.CASPER: dbc_dict('hyundai_kia_generic', None),
     # kia
     CAR.KIA_FORTE: dbc_dict('hyundai_kia_generic', None),
     CAR.K3_BD: dbc_dict('hyundai_kia_generic', None),
