@@ -1147,7 +1147,7 @@ class CarController():
         can_sends.append(create_scc14(self.packer, enabled, CS.scc14, CS.out.stockAeb, lead_visible, self.dRel, 
          CS.out.vEgo, self.acc_standstill, self.car_fingerprint))
         self.accel = accel
-      if frame % 20 == 0:
+      if frame % 20 == 0 and CS.has_scc13:
         if self.radar_disabled_conf:
           if CS.CP.fcaBus == -1:
             can_sends.append(create_fca12(self.packer))
