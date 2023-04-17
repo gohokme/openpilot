@@ -550,6 +550,8 @@ struct CarParams {
   aqValue @80: Float32;
   aqValueRaw @81: Float32;
   vFutureA @83: Float32;
+  hasScc13 @84 :Bool;
+  hasScc14 @85 :Bool;
 
   struct SmoothSteerData
   {
