@@ -70,6 +70,7 @@ class CAR:
   SELTOS_SP2 = "KIA SELTOS (SP2)"
   SOUL_EV_SK3 = "KIA SOUL EV (SK3)"
   MOHAVE_HM = "KIA MOHAVE (HM)"
+  K9_RJ = "KIA K9 (RJ)"
 
   # GENESIS
   GENESIS_DH = "GENESIS (DH)"
@@ -139,6 +140,7 @@ CAR_INFO: Dict[str, Union[HyundaiCarInfo, List[HyundaiCarInfo]]] = {
   CAR.SELTOS_SP2: HyundaiCarInfo("Kia Seltos 2021", harness=Harness.hyundai_a),
   CAR.SOUL_EV_SK3: HyundaiCarInfo("Kia Soul EV 2019"),
   CAR.MOHAVE_HM: HyundaiCarInfo("Kia Mohave 2019"),
+  CAR.K9_RJ: HyundaiCarInfo("Kia K9 2019"),
 
   # genesis
   CAR.GENESIS_DH: HyundaiCarInfo("Genesis 2015-2016", min_enable_speed=19 * CV.MPH_TO_MS, harness=Harness.hyundai_j),
@@ -435,6 +437,11 @@ FINGERPRINTS = {
   CAR.MOHAVE_HM: [{
     67: 8, 127: 8, 304: 8, 320: 8, 339: 8, 356: 4, 544: 8, 593: 8, 608: 8, 688: 5, 809: 8, 832: 8, 854: 8, 870: 7, 871: 8, 872: 8, 897: 8, 902: 8, 905: 8, 909: 8, 913: 8, 916: 8, 1040: 8, 1056: 8, 1057: 8, 1064: 8, 1078: 4, 1107: 5, 1123: 8, 1136: 8, 1145: 8, 1151: 8, 1155: 8, 1156: 8, 1157: 4, 1162: 8, 1164: 8, 1168: 8, 1170: 8, 1173: 8, 1180: 8, 1186: 2, 1191: 2, 1193: 8, 1210: 8, 1225: 8, 1227: 8, 1265: 4, 1280: 8, 1287: 4, 1290: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1363: 8, 1369: 8, 1371: 8, 1378: 8, 1384: 8, 1407: 8, 1419: 8, 1427: 6, 1456: 4, 1470: 8, 1479: 8
   }]
+  CAR.K9_RJ: [{
+    67: 8, 127: 8, 304: 8, 320: 8, 339: 8, 356: 4, 544: 8, 593: 8, 608: 8, 688: 5, 809: 8, 832: 8, 854: 7, 870: 7, 871: 8, 872: 8, 897: 8, 902: 8, 903: 8, 905: 8, 909: 8, 916: 8, 1056: 8, 1057: 8, 1078: 4, 1107: 5, 1136: 8, 1151: 6, 1155: 8, 1156: 8, 1157: 4, 1162: 8, 1164: 8, 1168: 7, 1170: 8, 1173: 8, 1184: 8, 1186: 2, 1191: 2, 1227: 8, 1265: 4, 1280: 4, 1287: 4, 1290: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1363: 8, 1369: 8, 1379: 8, 1384: 8, 1407: 8, 1419: 8, 1427: 6, 1456: 4, 1470: 8
+  },{
+    67: 8, 127: 8, 304: 8, 320: 8, 339: 8, 356: 4, 544: 8, 593: 8, 608: 8, 688: 5, 809: 8, 832: 8, 854: 7, 870: 7, 871: 8, 872: 8, 897: 8, 902: 8, 903: 8, 905: 8, 909: 8, 916: 8, 1056: 8, 1057: 8, 1064: 8, 1078: 4, 1107: 5, 1136: 8, 1151: 6, 1155: 8, 1156: 8, 1157: 4, 1162: 8, 1164: 8, 1168: 7, 1170: 8, 1173: 8, 1180: 8, 1184: 8, 1186: 2, 1191: 2, 1210: 8, 1227: 8, 1265: 4, 1280: 4, 1281: 4, 1287: 4, 1290: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1363: 8, 1369: 8, 1371: 8, 1378: 4, 1384: 8, 1407: 8, 1419: 8, 1427: 6, 1434: 2, 1456: 4, 1470: 8
+  }],
 }
 
 if Params().get_bool("FingerprintTwoSet"):
@@ -806,13 +813,14 @@ FEATURES = {
   "send_lfahda_mfa": {CAR.GRANDEUR_HEV_FL_IG, CAR.GRANDEUR_FL_IG, CAR.SONATA_DN8, CAR.PALISADE_LX2, CAR.SONATA_HEV_DN8, CAR.SANTAFE_TM, CAR.KONA_EV_OS, 
                       CAR.NIRO_EV_DE, CAR.KONA_HEV_OS, CAR.SELTOS_SP2, CAR.SOUL_EV_SK3, CAR.NEXO_FE, CAR.MOHAVE_HM, CAR.STINGER_CK, CAR.AVANTE_CN7, 
                       CAR.AVANTE_HEV_CN7, CAR.K5_DL3, CAR.SANTAFE_HEV_TM, CAR.SANTAFE_TM_2022, CAR.GENESIS_G70_IK, CAR.KONA_N_OS, CAR.K5_DL3, CAR.K5_HEV_DL3,
-                      CAR.K7_YG_2020, CAR.NIRO_HEV_DE_2021},
+                      CAR.K7_YG_2020, CAR.NIRO_HEV_DE_2021, CAR.K9_RJ},
 
   "send_hda_mfa": {CAR.GRANDEUR_IG, CAR.GRANDEUR_HEV_IG},
   # these cars use the FCA11 message for the AEB and FCW signals, all others use SCC12
   # Insert your car in this if you see front collision error on your cluster.
   "use_fca": {CAR.K7_YG_2020, CAR.SANTAFE_TM_2022, CAR.GRANDEUR_HEV_FL_IG, CAR.GRANDEUR_FL_IG, CAR.SONATA_DN8, CAR.AVANTE_CN7, CAR.I30_PD, CAR.PALISADE_LX2, 
-              CAR.GENESIS_G70_IK, CAR.GENESIS_G70_2020, CAR.GENESIS_G90_HI, CAR.KONA_HEV_OS, CAR.KONA_EV_OS, CAR.SELTOS_SP2, CAR.MOHAVE_HM, CAR.KIA_FORTE},
+              CAR.GENESIS_G70_IK, CAR.GENESIS_G70_2020, CAR.GENESIS_G90_HI, CAR.KONA_HEV_OS, CAR.KONA_EV_OS, CAR.SELTOS_SP2, CAR.MOHAVE_HM, CAR.KIA_FORTE,
+              CAR.K9_RJ},
 }
 
 HYBRID_CAR = {CAR.K5_HEV_JF, CAR.IONIQ_HEV_AE, CAR.SONATA_HEV_DN8, CAR.SONATA_HEV_LF, CAR.K7_HEV_YG, CAR.GRANDEUR_HEV_IG, CAR.GRANDEUR_HEV_FL_IG, 
@@ -876,6 +884,7 @@ if Params().get_bool("UseRadarTrack"):
     CAR.SELTOS_SP2: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.SOUL_EV_SK3: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.MOHAVE_HM: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
+    CAR.K9_RJ: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
   }
 else:
   DBC = {
@@ -933,6 +942,8 @@ else:
     CAR.SELTOS_SP2: dbc_dict('hyundai_kia_generic', None),
     CAR.SOUL_EV_SK3: dbc_dict('hyundai_kia_generic', None),
     CAR.MOHAVE_HM: dbc_dict('hyundai_kia_generic', None),
+    CAR.K9_RJ: dbc_dict('hyundai_kia_generic', None),
+
   }
 
 STEER_THRESHOLD = int(Params().get("SteerThreshold", encoding="utf8"))
