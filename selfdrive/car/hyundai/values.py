@@ -38,6 +38,7 @@ class CAR:
   KONA_HEV_OS = "HYUNDAI KONA HYBRID (OS)"
   IONIQ_EV_AE = "HYUNDAI IONIQ ELECTRIC (AE)"
   IONIQ_HEV_AE = "HYUNDAI IONIQ HYBRID (AE)"
+  SANTAFE_DM = "HYUNDAI SANTAFE (DM)"  
   SANTAFE_TM = "HYUNDAI SANTAFE (TM)"
   SANTAFE_HEV_TM = "HYUNDAI SANTAFE HYBRID (TM)"
   SANTAFE_TM_2022 = "HYUNDAI SANTAFE (TM) 2022"
@@ -104,6 +105,7 @@ CAR_INFO: Dict[str, Union[HyundaiCarInfo, List[HyundaiCarInfo]]] = {
   CAR.KONA_HEV_OS: HyundaiCarInfo("Hyundai Kona Hybrid 2020", video_link="https://youtu.be/_EdYQtV52-c", harness=Harness.hyundai_i),
   CAR.IONIQ_EV_AE: HyundaiCarInfo("Hyundai Ioniq Electric 2019", "All", harness=Harness.hyundai_c),
   CAR.IONIQ_HEV_AE: HyundaiCarInfo("Hyundai Ioniq Hybrid 2020-22", "SCC + LFA", harness=Harness.hyundai_h),
+  CAR.SANTAFE_DM: HyundaiCarInfo("Hyundai Santa Fe 2016-18", "All", harness=Harness.hyundai_d),
   CAR.SANTAFE_TM: HyundaiCarInfo("Hyundai Santa Fe 2019-20", "All", harness=Harness.hyundai_d),
   CAR.SANTAFE_HEV_TM: HyundaiCarInfo("Hyundai Santa Fe Hybrid 2022", "All", harness=Harness.hyundai_l),
   CAR.PALISADE_LX2: [
@@ -292,6 +294,8 @@ FINGERPRINTS = {
     127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 544: 7, 545: 8, 546: 8, 548: 8, 549: 8, 593: 8, 688: 5, 832: 8, 881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 916: 8, 1040: 8, 1056: 8, 1057: 8, 1078: 4, 1136: 8, 1151: 6, 1168: 7, 1173: 8, 1265: 4, 1280: 1, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1322: 8, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1407: 8, 1419: 8, 1426: 8, 1427: 6, 1429: 8, 1430: 8, 1456: 4, 1470: 8, 1507: 8, 1535: 8
     },{
     127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 544: 7, 546: 8, 832: 8, 881: 8, 882: 8, 902: 8, 903: 8, 916: 8, 1040: 8, 1056: 8, 1057: 8, 1078: 4, 1136: 8, 1151: 6, 1168: 7, 1173: 8, 1265: 4, 1280: 1, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1322: 8, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1407: 8, 1419: 8, 1426: 8, 1427: 6, 1429: 8, 1430: 8, 1456: 4, 1470: 8, 1507: 8
+  }],
+  CAR.SANTAFE_DM: [{
   }],
   CAR.SANTAFE_TM: [{
     67: 8, 127: 8, 304: 8, 320: 8, 339: 8, 356: 4, 544: 8, 593: 8, 608: 8, 688: 6, 809: 8, 832: 8, 854: 7, 870: 7, 871: 8, 872: 8, 897: 8, 902: 8, 903: 8, 905: 8, 909: 8, 916: 8, 1040: 8, 1042: 8, 1056: 8, 1057: 8, 1078: 4, 1107: 5, 1136: 8, 1151: 6, 1155: 8, 1156: 8, 1162: 8, 1164: 8, 1168: 7, 1170: 8, 1173: 8, 1183: 8, 1186: 2, 1191: 2, 1227: 8, 1265: 4, 1280: 1, 1287: 4, 1290: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1363: 8, 1369: 8, 1379: 8, 1384: 8, 1407: 8, 1414: 3, 1419: 8, 1427: 6, 1456: 4, 1470: 8
@@ -860,6 +864,7 @@ if Params().get_bool("UseRadarTrack"):
     CAR.KONA_HEV_OS: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.IONIQ_EV_AE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.IONIQ_HEV_AE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
+    CAR.SANTAFE_DM: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.SANTAFE_TM: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.SANTAFE_TM_2022: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.PALISADE_LX2: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
@@ -920,6 +925,7 @@ else:
     CAR.KONA_HEV_OS: dbc_dict('hyundai_kia_generic', None),
     CAR.IONIQ_EV_AE: dbc_dict('hyundai_kia_generic', None),
     CAR.IONIQ_HEV_AE: dbc_dict('hyundai_kia_generic', None),
+    CAR.SANTAFE_DM: dbc_dict('hyundai_kia_generic', None),
     CAR.SANTAFE_TM: dbc_dict('hyundai_kia_generic', None),
     CAR.SANTAFE_TM_2022: dbc_dict('hyundai_kia_generic', None),
     CAR.PALISADE_LX2: dbc_dict('hyundai_kia_generic', None),
