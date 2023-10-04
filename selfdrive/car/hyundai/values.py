@@ -61,6 +61,7 @@ class CAR:
   SPORTAGE_QL = "KIA SPORTAGE (QL)"
   SORENTO_UM = "KIA SORENTO (UM)"
   STINGER_CK = "KIA STINGER (CK)"
+  STINGER_2022 = "KIA STINGER 2022"
   NIRO_EV_DE = "KIA NIRO EV (DE)"
   NIRO_HEV_DE = "KIA NIRO HYBRID (DE)"
   NIRO_HEV_DE_2021 = "KIA NIRO HYBRID (DE) 2021"
@@ -131,6 +132,7 @@ CAR_INFO: Dict[str, Union[HyundaiCarInfo, List[HyundaiCarInfo]]] = {
   CAR.SPORTAGE_QL: HyundaiCarInfo("Kia Sportage"),
   CAR.SORENTO_UM: HyundaiCarInfo("Kia Sorento 2018-19", video_link="https://www.youtube.com/watch?v=Fkh3s6WHJz8"),
   CAR.STINGER_CK: HyundaiCarInfo("Kia Stinger 2018", video_link="https://www.youtube.com/watch?v=MJ94qoofYw0", harness=Harness.hyundai_c),
+  CAR.STINGER_2022: HyundaiCarInfo("Kia Stinger 2022"),
   CAR.NIRO_EV_DE: HyundaiCarInfo("Kia Niro Electric 2019-22", "All", video_link="https://www.youtube.com/watch?v=lT7zcG6ZpGo"),
   CAR.NIRO_HEV_DE: HyundaiCarInfo("Kia Niro Plug-In Hybrid 2019", min_enable_speed=10. * CV.MPH_TO_MS, harness=Harness.hyundai_c),
   CAR.NIRO_HEV_DE_2021: HyundaiCarInfo("Kia Niro Plug-In Hybrid 2021-22", "All", video_link="https://www.youtube.com/watch?v=lT7zcG6ZpGo"),
@@ -401,6 +403,8 @@ FINGERPRINTS = {
     67: 8, 127: 8, 304: 8, 320: 8, 339: 8, 356: 4, 358: 6, 359: 8, 544: 8, 576: 8, 593: 8, 608: 8, 688: 5, 809: 8, 832: 8, 854: 7, 870: 7, 871: 8, 872: 8, 897: 8, 902: 8, 909: 8, 916: 8, 1040: 8, 1042: 8, 1056: 8, 1057: 8, 1064: 8, 1078: 4, 1107: 5, 1136: 8, 1151: 6, 1157: 4, 1168: 7, 1170: 8, 1173: 8, 1184: 8, 1265: 4, 1280: 1, 1281: 4, 1287: 4, 1290: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1363: 8, 1369: 8, 1371: 8, 1378: 4, 1384: 8, 1407: 8, 1419: 8, 1427: 6, 1437: 8, 1456: 4, 1470: 8
     },{
     67: 8, 127: 8, 304: 8, 320: 8, 339: 8, 356: 4, 358: 6, 359: 8, 544: 8, 576: 8, 593: 8, 608: 8, 688: 5, 809: 8, 832: 8, 854: 7, 870: 7, 871: 8, 872: 8, 897: 8, 902: 8, 909: 8, 916: 8, 1040: 8, 1042: 8, 1056: 8, 1057: 8, 1064: 8, 1078: 4, 1107: 5, 1136: 8, 1151: 6, 1168: 7, 1170: 8, 1173: 8, 1184: 8, 1265: 4, 1280: 1, 1281: 4, 1287: 4, 1290: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1363: 8, 1369: 8, 1378: 4, 1379: 8, 1384: 8, 1407: 8, 1419: 8, 1425: 2, 1427: 6, 1456: 4, 1470: 8
+  }],
+  CAR.STINGER_2022: [{
   }],
   CAR.NIRO_EV_DE: [{
     127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 544: 8, 593: 8, 688: 5, 832: 8, 881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 905: 8, 909: 8, 916: 8, 1040: 8, 1042: 8, 1056: 8, 1057: 8, 1078: 4, 1136: 8, 1151: 6, 1157: 4, 1168: 7, 1173: 8, 1186: 2, 1191: 2, 1225: 8, 1265: 4, 1280: 1, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1407: 8, 1419: 8, 1426: 8, 1427: 6, 1429: 8, 1430: 8, 1456: 4, 1470: 8, 1473: 8, 1507: 8, 1535: 8
@@ -818,14 +822,14 @@ FEATURES = {
   "send_lfahda_mfa": {CAR.GRANDEUR_HEV_FL_IG, CAR.GRANDEUR_FL_IG, CAR.SONATA_DN8, CAR.PALISADE_LX2, CAR.SONATA_HEV_DN8, CAR.SANTAFE_TM, CAR.KONA_EV_OS, 
                       CAR.NIRO_EV_DE, CAR.KONA_HEV_OS, CAR.SELTOS_SP2, CAR.SOUL_EV_SK3, CAR.NEXO_FE, CAR.MOHAVE_HM, CAR.STINGER_CK, CAR.AVANTE_CN7, 
                       CAR.AVANTE_HEV_CN7, CAR.K5_DL3, CAR.SANTAFE_HEV_TM, CAR.SANTAFE_TM_2022, CAR.GENESIS_G70_IK, CAR.KONA_N_OS, CAR.K5_DL3, CAR.K5_HEV_DL3,
-                      CAR.K7_YG_2020, CAR.NIRO_HEV_DE_2021, CAR.K9_RJ, CAR.CASPER},
+                      CAR.K7_YG_2020, CAR.NIRO_HEV_DE_2021, CAR.K9_RJ, CAR.CASPER, CAR.STINGER_2022},
 
   "send_hda_mfa": {CAR.GRANDEUR_IG, CAR.GRANDEUR_HEV_IG},
   # these cars use the FCA11 message for the AEB and FCW signals, all others use SCC12
   # Insert your car in this if you see front collision error on your cluster.
   "use_fca": {CAR.K7_YG_2020, CAR.SANTAFE_TM_2022, CAR.GRANDEUR_HEV_FL_IG, CAR.GRANDEUR_FL_IG, CAR.SONATA_DN8, CAR.AVANTE_CN7, CAR.I30_PD, CAR.PALISADE_LX2, 
               CAR.GENESIS_G70_IK, CAR.GENESIS_G70_2020, CAR.GENESIS_G90_HI, CAR.KONA_HEV_OS, CAR.KONA_EV_OS, CAR.SELTOS_SP2, CAR.MOHAVE_HM, CAR.KIA_FORTE,
-              CAR.K9_RJ},
+              CAR.K9_RJ, CAR.STINGER_2022},
 
 }
 
@@ -881,6 +885,7 @@ if Params().get_bool("UseRadarTrack"):
     CAR.SPORTAGE_QL: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.SORENTO_UM: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.STINGER_CK: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
+    CAR.STINGER_2022: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.NIRO_EV_DE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.NIRO_HEV_DE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.NIRO_HEV_DE_2021: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
@@ -939,6 +944,7 @@ else:
     CAR.SPORTAGE_QL: dbc_dict('hyundai_kia_generic', None),
     CAR.SORENTO_UM: dbc_dict('hyundai_kia_generic', None),
     CAR.STINGER_CK: dbc_dict('hyundai_kia_generic', None),
+    CAR.STINGER_2022: dbc_dict('hyundai_kia_generic', None),
     CAR.NIRO_EV_DE: dbc_dict('hyundai_kia_generic', None),
     CAR.NIRO_HEV_DE: dbc_dict('hyundai_kia_generic', None),
     CAR.NIRO_HEV_DE_2021: dbc_dict('hyundai_kia_generic', None),
