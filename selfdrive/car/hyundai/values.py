@@ -63,6 +63,7 @@ class CAR:
   STINGER_CK = "KIA STINGER (CK)"
   STINGER_2022 = "KIA STINGER 2022"
   NIRO_EV_DE = "KIA NIRO EV (DE)"
+  NIRO_PLUS_EV_DE = "KIA NIRO PLUS EV (DE)"
   NIRO_HEV_DE = "KIA NIRO HYBRID (DE)"
   NIRO_HEV_DE_2021 = "KIA NIRO HYBRID (DE) 2021"
   K7_YG = "KIA K7 (YG)"
@@ -134,6 +135,7 @@ CAR_INFO: Dict[str, Union[HyundaiCarInfo, List[HyundaiCarInfo]]] = {
   CAR.STINGER_CK: HyundaiCarInfo("Kia Stinger 2018", video_link="https://www.youtube.com/watch?v=MJ94qoofYw0", harness=Harness.hyundai_c),
   CAR.STINGER_2022: HyundaiCarInfo("Kia Stinger 2022"),
   CAR.NIRO_EV_DE: HyundaiCarInfo("Kia Niro Electric 2019-22", "All", video_link="https://www.youtube.com/watch?v=lT7zcG6ZpGo"),
+  CAR.NIRO_PLUS_EV_DE: HyundaiCarInfo("Kia Niro Electric Plus 2019-22", "All", video_link="https://www.youtube.com/watch?v=lT7zcG6ZpGo"),
   CAR.NIRO_HEV_DE: HyundaiCarInfo("Kia Niro Plug-In Hybrid 2019", min_enable_speed=10. * CV.MPH_TO_MS, harness=Harness.hyundai_c),
   CAR.NIRO_HEV_DE_2021: HyundaiCarInfo("Kia Niro Plug-In Hybrid 2021-22", "All", video_link="https://www.youtube.com/watch?v=lT7zcG6ZpGo"),
   CAR.K7_YG: HyundaiCarInfo("Kia K7 2016-19"),
@@ -410,6 +412,8 @@ FINGERPRINTS = {
     127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 544: 8, 593: 8, 688: 5, 832: 8, 881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 905: 8, 909: 8, 916: 8, 1040: 8, 1042: 8, 1056: 8, 1057: 8, 1078: 4, 1136: 8, 1151: 6, 1157: 4, 1168: 7, 1173: 8, 1186: 2, 1191: 2, 1225: 8, 1265: 4, 1280: 1, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1407: 8, 1419: 8, 1426: 8, 1427: 6, 1429: 8, 1430: 8, 1456: 4, 1470: 8, 1473: 8, 1507: 8, 1535: 8
     },{
     127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 544: 8, 546: 8, 593: 8, 688: 5, 832: 8, 881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 905: 8, 909: 8, 916: 8, 1040: 8, 1042: 8, 1056: 8, 1057: 8, 1078: 4, 1136: 8, 1151: 6, 1157: 4, 1168: 7, 1173: 8, 1186: 2, 1191: 2, 1225: 8, 1265: 4, 1280: 1, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1407: 8, 1419: 8, 1426: 8, 1427: 6, 1429: 8, 1430: 8, 1456: 4, 1470: 8, 1473: 8, 1507: 8, 1535: 8
+  }],
+  CAR.NIRO_PLUS_EV_DE: [{
   }],
   CAR.NIRO_HEV_DE: [{
     68: 8, 127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 544: 8, 576: 8, 593: 8, 688: 5, 832: 8, 881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 916: 8, 1040: 8, 1056: 8, 1057: 8, 1078: 4, 1136: 6, 1173: 8, 1225: 8, 1265: 4, 1280: 1, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1419: 8, 1427: 6, 1429: 8, 1430: 8, 1448: 8, 1456: 4, 1470: 8, 1476: 8, 1535: 8
@@ -814,7 +818,7 @@ FEATURES = {
   # Use E_GEAR Message for Gear Selection
   "use_elect_gears": {CAR.SONATA_HEV_DN8, CAR.SONATA_HEV_LF, CAR.KONA_EV_OS, CAR.KONA_HEV_OS, CAR.IONIQ_EV_AE, CAR.IONIQ_HEV_AE, CAR.GRANDEUR_HEV_IG, 
                       CAR.GRANDEUR_HEV_FL_IG, CAR.NEXO_FE, CAR.K5_HEV_JF, CAR.K7_HEV_YG, CAR.NIRO_EV_DE, CAR.NIRO_HEV_DE, CAR.SOUL_EV_SK3, CAR.AVANTE_HEV_CN7,
-                      CAR.SANTAFE_HEV_TM, CAR.K5_HEV_DL3, CAR.NIRO_HEV_DE_2021},
+                      CAR.SANTAFE_HEV_TM, CAR.K5_HEV_DL3, CAR.NIRO_HEV_DE_2021, CAR.NIRO_PLUS_EV_DE},
 
   # send LFA MFA message for new HKG models
   # Insert your car in this if you want turn LFA icon on.
@@ -887,6 +891,7 @@ if Params().get_bool("UseRadarTrack"):
     CAR.STINGER_CK: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.STINGER_2022: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.NIRO_EV_DE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
+    CAR.NIRO_PLUS_EV_DE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.NIRO_HEV_DE: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.NIRO_HEV_DE_2021: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.K7_YG: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
@@ -946,6 +951,7 @@ else:
     CAR.STINGER_CK: dbc_dict('hyundai_kia_generic', None),
     CAR.STINGER_2022: dbc_dict('hyundai_kia_generic', None),
     CAR.NIRO_EV_DE: dbc_dict('hyundai_kia_generic', None),
+    CAR.NIRO_PLUS_EV_DE: dbc_dict('hyundai_kia_generic', None),
     CAR.NIRO_HEV_DE: dbc_dict('hyundai_kia_generic', None),
     CAR.NIRO_HEV_DE_2021: dbc_dict('hyundai_kia_generic', None),
     CAR.K7_YG: dbc_dict('hyundai_kia_generic', None),
