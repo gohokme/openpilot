@@ -270,6 +270,10 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.K9_RJ:
       ret.mass = 2005. + STD_CARGO_KG
       ret.wheelbase = 3.15
+    elif candidate == CAR.MORNING:
+      ret.mass = 1000. + STD_CARGO_KG
+      ret.wheelbase = 2.4
+
 
     # set appropriate safety param for gas signal
     if candidate in HYBRID_CAR:
