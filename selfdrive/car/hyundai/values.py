@@ -73,6 +73,7 @@ class CAR:
   SOUL_EV_SK3 = "KIA SOUL EV (SK3)"
   MOHAVE_HM = "KIA MOHAVE (HM)"
   K9_RJ = "KIA K9 (RJ)"
+  MORNING = "KIA MORNING 2023 (JA)"
 
   # GENESIS
   GENESIS_DH = "GENESIS (DH)"
@@ -454,6 +455,8 @@ FINGERPRINTS = {
   CAR.TUCSON_TL: [{
     64: 8, 66: 8, 67: 8, 68: 8, 127: 8, 273: 8, 274: 8, 275: 8, 339: 8, 356: 4, 399: 8, 512: 6, 544: 8, 608: 8, 790: 8, 809: 8, 832: 8, 899: 8, 902: 8, 903: 8, 909: 8, 916: 8, 1040: 8, 1056: 8, 1057: 8, 1078: 4, 1151: 6, 1168: 7, 1170: 8, 1186: 2, 1191: 2, 1265: 4, 1280: 1, 1282: 4, 1287: 4, 1290: 8, 1292: 8, 1312: 8, 1314: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1349: 8, 1351: 8, 1353: 8, 1363: 8, 1365: 8, 1366: 8, 1367: 8, 1369: 8, 1407: 8, 1419: 8, 1427: 6, 1440: 8, 1456: 4, 1470: 8, 1472: 8, 1491: 8, 2006: 8, 2014: 8, 2015: 8, 2016: 8, 2023: 8, 2024: 8, 2025: 8
   }],
+  CAR.MORNING: [{
+  }],
   
 }
 
@@ -826,7 +829,7 @@ FEATURES = {
   "send_lfahda_mfa": {CAR.GRANDEUR_HEV_FL_IG, CAR.GRANDEUR_FL_IG, CAR.SONATA_DN8, CAR.PALISADE_LX2, CAR.SONATA_HEV_DN8, CAR.SANTAFE_TM, CAR.KONA_EV_OS, 
                       CAR.NIRO_EV_DE, CAR.KONA_HEV_OS, CAR.SELTOS_SP2, CAR.SOUL_EV_SK3, CAR.NEXO_FE, CAR.MOHAVE_HM, CAR.STINGER_CK, CAR.AVANTE_CN7, 
                       CAR.AVANTE_HEV_CN7, CAR.K5_DL3, CAR.SANTAFE_HEV_TM, CAR.SANTAFE_TM_2022, CAR.GENESIS_G70_IK, CAR.KONA_N_OS, CAR.K5_DL3, CAR.K5_HEV_DL3,
-                      CAR.K7_YG_2020, CAR.NIRO_HEV_DE_2021, CAR.K9_RJ, CAR.CASPER, CAR.STINGER_2022},
+                      CAR.K7_YG_2020, CAR.NIRO_HEV_DE_2021, CAR.K9_RJ, CAR.CASPER, CAR.STINGER_2022, CAR.MORNING},
 
   "send_hda_mfa": {CAR.GRANDEUR_IG, CAR.GRANDEUR_HEV_IG},
   # these cars use the FCA11 message for the AEB and FCW signals, all others use SCC12
@@ -901,6 +904,7 @@ if Params().get_bool("UseRadarTrack"):
     CAR.SOUL_EV_SK3: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.MOHAVE_HM: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
     CAR.K9_RJ: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
+    CAR.MORNING: dbc_dict('hyundai_kia_generic', 'hyundai_kia_mando_front_radar'),
   }
 else:
   DBC = {
@@ -961,6 +965,7 @@ else:
     CAR.SOUL_EV_SK3: dbc_dict('hyundai_kia_generic', None),
     CAR.MOHAVE_HM: dbc_dict('hyundai_kia_generic', None),
     CAR.K9_RJ: dbc_dict('hyundai_kia_generic', None),
+    CAR.MORNING: dbc_dict('hyundai_kia_generic', None),
 
   }
 
