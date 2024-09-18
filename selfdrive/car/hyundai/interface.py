@@ -273,6 +273,9 @@ class CarInterface(CarInterfaceBase):
     elif candidate == CAR.MORNING:
       ret.mass = 1000. + STD_CARGO_KG
       ret.wheelbase = 2.4
+    elif candidate == CAR.SOUL_SK3:
+      ret.mass = 1350. + STD_CARGO_KG
+      ret.wheelbase = 2.6
 
 
     # set appropriate safety param for gas signal
