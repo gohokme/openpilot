@@ -38,8 +38,8 @@ def manager_init() -> None:
   params.clear_all(ParamKeyType.CLEAR_ON_MANAGER_START)
 
   default_params: List[Tuple[str, Union[str, bytes]]] = [
-    ("CompletedTrainingVersion", "0"),
-    ("HasAcceptedTerms", "0"),
+    ("CompletedTrainingVersion", "1"),
+    ("HasAcceptedTerms", "1"),
     ("OpenpilotEnabledToggle", "1"),
     ("IsMetric", "1"),
     ("EndToEndToggle", "1"),
@@ -110,7 +110,7 @@ def manager_init() -> None:
     ("OpkrMaxSteerAngleWait", "0.001"),
     ("OpkrDriverAngleWait", "0.001"),
     ("OpkrSpeedLimitOffset", "0"),
-    ("OpkrLiveSteerRatio", "1"),
+    ("OpkrLiveSteerRatio", "0"),
     ("OpkrVariableSteerMax", "0"),
     ("OpkrVariableSteerDelta", "0"),
     ("FingerprintTwoSet", "0"),
