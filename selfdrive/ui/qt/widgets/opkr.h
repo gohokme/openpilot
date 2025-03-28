@@ -957,6 +957,47 @@ public:
   }
 };
 
+class CruiseSetwithRoadLimitSpeed : public ToggleControl {
+  Q_OBJECT
+
+public:
+  CruiseSetwithRoadLimitSpeed() : ToggleControl(tr("CruiseSet with RoadLimitSpeed"), tr("Cruise Set with RoadLimitSpeed(Ext Navi)"), "../assets/offroad/icon_shell.png", Params().getBool("CruiseSetwithRoadLimitSpeedEnabled")) {
+    QObject::connect(this, &CruiseSetwithRoadLimitSpeed::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("CruiseSetwithRoadLimitSpeedEnabled", status);
+    });
+  }
+};
+
+class OPKRDebug : public ToggleControl {
+  Q_OBJECT
+
+public:
+  OPKRDebug() : ToggleControl(tr("OPKR Debug Mode"), tr("Run OPKR Debug Mode"), "../assets/offroad/icon_shell.png", Params().getBool("OPKRDebug")) {
+    QObject::connect(this, &OPKRDebug::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("OPKRDebug", status);
+      if (state) {
+        QUIState::ui_state.scene.OPKR_Debug = true;
+      } else {
+        QUIState::ui_state.scene.OPKR_Debug = false;
+      }
+    });
+  }
+};
+
+class SetSpeedByFive : public ToggleControl {
+  Q_OBJECT
+
+public:
+  SetSpeedByFive() : ToggleControl(tr("SetSpeed Changed by 5"), tr("MAX Speed can be adjusted by 5. Cruise Set Speed will be set as same with MAX quickly."), "../assets/offroad/icon_shell.png", Params().getBool("SetSpeedFive")) {
+    QObject::connect(this, &SetSpeedByFive::toggleFlipped, [=](int state) {
+      bool status = state ? true : false;
+      Params().putBool("SetSpeedFive", status);
+    });
+  }
+};
+
 // openpilot preview
 class OpenpilotView : public AbstractControl {
   Q_OBJECT
@@ -2671,4 +2712,19 @@ private:
   void refresh5();
   void refresh6();
   void refresh7();
+};
+
+class CruiseSetwithRoadLimitSpeedOffset : public AbstractControl {
+  Q_OBJECT
+
+public:
+  CruiseSetwithRoadLimitSpeedOffset();
+
+private:
+  QPushButton btnplus;
+  QPushButton btnminus;
+  QLabel label;
+  Params params;
+  
+  void refresh();
 };
