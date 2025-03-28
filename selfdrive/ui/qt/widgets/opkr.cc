@@ -2286,12 +2286,12 @@ void SpeedLimitOffset::refresh() {
     btn.setText("%");
   } else if (strs == "1") {
     btn.setText("±");
-  } else {
+  } else if (strs == "2") {
     btn.setText("C");
-  }
+  } else {
+    btn.setText("D");}
   label.setText(QString::fromStdString(params.get("OpkrSpeedLimitOffset")));
 }
-
 RESChoice::RESChoice() : AbstractControl(tr("AutoRES Option"), tr("Sets the auto RES option. 1. Adjust the temporary cruise speed, 2. Adjust the set speed itself according to the presence or absence of a preceding car. 3. Adjust the cruise speed if there is a preceding car, and adjust the set speed if there is no preceding car. Please note that the automatic RES may not work well depending on the conditions."), "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
@@ -5660,75 +5660,75 @@ void LiveSRPercent::refresh() {
   btnplus.setText("+");
 }
 
-VCurvSpeedUD::VCurvSpeedUD() : AbstractControl(tr("VisionCurvDecel([CV] [TargetSpeed])"), tr("Adjust the curve deceleration speed according to the model speed(curvature). (interpolation and list value)"), "../assets/offroad/icon_shell.png") {
-}
 
-VCurvSpeed::VCurvSpeed() : AbstractControl("", "", "") {
-  btn.setStyleSheet(R"(
-    padding: -10;
-    border-radius: 35px;
-    font-size: 35px;
-    font-weight: 500;
-    color: #E4E4E4;
-    background-color: #393939;
-  )");
-  edit1.setStyleSheet(R"(
-    background-color: grey;
-    font-size: 55px;
-    font-weight: 500;
-    height: 120px;
-  )");
-  edit2.setStyleSheet(R"(
-    background-color: grey;
-    font-size: 55px;
-    font-weight: 500;
-    height: 120px;
-  )");
-  btn.setFixedSize(150, 100);
-  edit1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
-  edit2.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
 
-  hlayout->addWidget(&edit1);
-  hlayout->addWidget(&edit2);
-  hlayout->addWidget(&btn);
 
-  QObject::connect(&btn, &QPushButton::clicked, [=]() {
-    int list_count1 = 0;
-    int list_count2 = 0;
-    QString targetvalue1 = InputDialog::getText(tr("Set CV values with comma"), this, tr("Values are kph or mph"), false, 1, QString::fromStdString(params.get("VCurvSpeedC")));
-    if (targetvalue1.length() > 0 && targetvalue1 != QString::fromStdString(params.get("VCurvSpeedC"))) {
-      QStringList list1 = targetvalue1.split(",");
-      list_count1 = list1.size();
-      params.put("VCurvSpeedC", targetvalue1.toStdString());
-      refresh();
-    } else {
-      QStringList list1 = QString::fromStdString(params.get("VCurvSpeedC")).split(",");
-      list_count1 = list1.size();
-    }
-    QString targetvalue2 = InputDialog::getText(tr("Set TS values with comma"), this, "CV: " + QString::fromStdString(params.get("VCurvSpeedC")), false, 1, QString::fromStdString(params.get("VCurvSpeedT")));
-    if (targetvalue2.length() > 0 && targetvalue2 != QString::fromStdString(params.get("VCurvSpeedT"))) {
-      QStringList list2 = targetvalue2.split(",");
-      list_count2 = list2.size();
-      params.put("VCurvSpeedT", targetvalue2.toStdString());
-      refresh();
-    } else {
-      QStringList list2 = QString::fromStdString(params.get("VCurvSpeedT")).split(",");
-      list_count2 = list2.size();
-    }
-    if (list_count1 != list_count2) {
-      ConfirmationDialog::alert(tr("Index count does not match. Check your input again."), this);
-    }
-  });
-  refresh();
-}
 
-void VCurvSpeed::refresh() {
-  auto strs1 = QString::fromStdString(params.get("VCurvSpeedC"));
-  auto strs2 = QString::fromStdString(params.get("VCurvSpeedT"));
-  edit1.setText(QString::fromStdString(strs1.toStdString()));
-  edit2.setText(QString::fromStdString(strs2.toStdString()));
-  btn.setText(tr("EDIT"));
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 OCurvSpeedUD::OCurvSpeedUD() : AbstractControl(tr("OSMCurvDecel([TSL] [TargetSpeed])"), tr("Adjust the curve deceleration speed according to turn speed limit of OSM. (interpolation value)"), "../assets/offroad/icon_shell.png") {
 }
@@ -6371,7 +6371,7 @@ void SpeedLimitSignType::refresh() {
   }
 }
 
-RadarLongHelperOption::RadarLongHelperOption() : AbstractControl(tr("Long Mode"), tr("Vision Only, Vision+Radar, Radar Only, OPKR Custom"), "../assets/offroad/icon_shell.png") {
+RadarLongHelperOption::RadarLongHelperOption() : AbstractControl(tr("Long Mode"), tr("Vision Only, Radar Only, OPKR(Radar+Vision)"), "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -6405,7 +6405,7 @@ RadarLongHelperOption::RadarLongHelperOption() : AbstractControl(tr("Long Mode")
     int value = str.toInt();
     value = value - 1;
     if (value <= -1) {
-      value = 3;
+      value = 2;
     }
     QString values = QString::number(value);
     params.put("RadarLongHelper", values.toStdString());
@@ -6416,7 +6416,7 @@ RadarLongHelperOption::RadarLongHelperOption() : AbstractControl(tr("Long Mode")
     auto str = QString::fromStdString(params.get("RadarLongHelper"));
     int value = str.toInt();
     value = value + 1;
-    if (value >= 4) {
+    if (value >= 3) {
       value = 0;
     }
     QString values = QString::number(value);
@@ -6431,13 +6431,13 @@ void RadarLongHelperOption::refresh() {
   if (option == "0") {
     label.setText(tr("Vision Only"));
   } else if (option == "1") {
-    label.setText(tr("Vision+Radar"));
-  } else if (option == "2") {
     label.setText(tr("Radar Only"));
   } else {
-    label.setText(tr("OPKR Custom"));
+    label.setText(tr("OPKR(Radar+Vision)"));
   }
 }
+
+
 
 CurvDecelSelect::CurvDecelSelect() : AbstractControl(tr("Curv Decel Option"), tr("None, Vision+OSM, Vision Only, OSM Only"), "../assets/offroad/icon_shell.png") {
 
@@ -6571,7 +6571,7 @@ void AutoRESDelay::refresh() {
   btnplus.setText("+");
 }
 
-OSMCustomSpeedLimitUD::OSMCustomSpeedLimitUD() : AbstractControl(tr("OSMCustomSpeedLimit([SL] [TargetSpeed])"), tr("Set the offset speed according to speed limit of OSM. (interpolation value)"), "../assets/offroad/icon_shell.png") {
+OSMCustomSpeedLimitUD::OSMCustomSpeedLimitUD() : AbstractControl(tr("CustomSpeedLimit([SL] [TargetSpeed])"), tr("Set the offset speed according to speed limit of OSM or Waze. (interpolation value)"), "../assets/offroad/icon_shell.png") {
 }
 
 OSMCustomSpeedLimit::OSMCustomSpeedLimit() : AbstractControl("", "", "") {
@@ -6942,7 +6942,7 @@ void SpeedLaneWidth::refresh() {
   btn.setText(tr("EDIT"));
 }
 
-OPKRTopTextView::OPKRTopTextView() : AbstractControl(tr("Bottom Text View"), tr("Date/Time/OSM Street Name"), "../assets/offroad/icon_shell.png") {
+OPKRTopTextView::OPKRTopTextView() : AbstractControl(tr("Bottom Text View"), tr("Date/Time/StreetName"), "../assets/offroad/icon_shell.png") {
 
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
@@ -7012,16 +7012,16 @@ void OPKRTopTextView::refresh() {
     label.setText(tr("Time"));
     QUIState::ui_state.scene.top_text_view = 3;
   } else if (option == "4") {
-    label.setText(tr("Date+Time+OSM"));
+    label.setText(tr("Date+Time+Str"));
     QUIState::ui_state.scene.top_text_view = 4;
   } else if (option == "5") {
-    label.setText(tr("Date+OSM"));
+    label.setText(tr("Date+Str"));
     QUIState::ui_state.scene.top_text_view = 5;
   } else if (option == "6") {
-    label.setText(tr("Time+OSM"));
+    label.setText(tr("Time+Str"));
     QUIState::ui_state.scene.top_text_view = 6;
   } else {
-    label.setText(tr("OSM"));
+    label.setText(tr("StreetName"));
     QUIState::ui_state.scene.top_text_view = 7;
   }
 }
@@ -8543,4 +8543,164 @@ void CruiseGapBySpd::refresh6() {
 void CruiseGapBySpd::refresh7() {
   QStringList list = QString::fromStdString(params.get("CruiseGapBySpdSpd")).split(",");
   label3.setText(list[2]);
+}
+
+CruiseSetwithRoadLimitSpeedOffset::CruiseSetwithRoadLimitSpeedOffset() : AbstractControl(tr("CruiseSet RoadLimitSpd Ofs"), tr("CruiseSet with RoadLimitSpeed Offset Value. This will add offset to navi road limit speed."), "../assets/offroad/icon_shell.png") {
+
+  label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+  label.setStyleSheet("color: #e0e879");
+  hlayout->addWidget(&label);
+
+  btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  btnminus.setFixedSize(150, 100);
+  btnplus.setFixedSize(150, 100);
+  btnminus.setText("－");
+  btnplus.setText("＋");
+  hlayout->addWidget(&btnminus);
+  hlayout->addWidget(&btnplus);
+
+  QObject::connect(&btnminus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("CruiseSetwithRoadLimitSpeedOffset"));
+    int value = str.toInt();
+    value = value - 1;
+    if (value <= -1) {
+      value = 0;
+    }
+    QString values = QString::number(value);
+    params.put("CruiseSetwithRoadLimitSpeedOffset", values.toStdString());
+    refresh();
+  });
+  
+  QObject::connect(&btnplus, &QPushButton::clicked, [=]() {
+    auto str = QString::fromStdString(params.get("CruiseSetwithRoadLimitSpeedOffset"));
+    int value = str.toInt();
+    value = value + 1;
+    if (value >= 50) {
+      value = 50;
+    }
+    QString values = QString::number(value);
+    params.put("CruiseSetwithRoadLimitSpeedOffset", values.toStdString());
+    refresh();
+  });
+  refresh();
+}
+
+void CruiseSetwithRoadLimitSpeedOffset::refresh() {
+  label.setText(QString::fromStdString(params.get("CruiseSetwithRoadLimitSpeedOffset")));
+}
+
+VCurvSpeedUD::VCurvSpeedUD() : AbstractControl(tr("VisionCurvDecel([CV] [TargetSpeed])"), tr("Adjust the curve deceleration speed according to the model speed(curvature). (interpolation and list value)"), "../assets/offroad/icon_shell.png") {
+}
+
+
+VCurvSpeed::VCurvSpeed() : AbstractControl("", "", "") {
+  btn.setStyleSheet(R"(
+    padding: -10;
+    border-radius: 35px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+  edit1.setStyleSheet(R"(
+    background-color: grey;
+    font-size: 55px;
+    font-weight: 500;
+    height: 120px;
+  )");
+  edit2.setStyleSheet(R"(
+    background-color: grey;
+    font-size: 55px;
+    font-weight: 500;
+    height: 120px;
+  )");
+  btn.setFixedSize(150, 100);
+  edit1.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  edit2.setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+  hlayout->addWidget(&edit1);
+  hlayout->addWidget(&edit2);
+  hlayout->addWidget(&btn);
+  QObject::connect(&btn, &QPushButton::clicked, [=]() {
+    int list_count1 = 0;
+    int list_count2 = 0;
+    bool is_metric = params.getBool("IsMetric");
+    if (is_metric) {
+      QString targetvalue1 = InputDialog::getText(tr("Set CV values with comma"), this, tr("Values are curve vector"), false, 1, QString::fromStdString(params.get("VCurvSpeedC")));
+      if (targetvalue1.length() > 0 && targetvalue1 != QString::fromStdString(params.get("VCurvSpeedC"))) {
+        QStringList list1 = targetvalue1.split(",");
+        list_count1 = list1.size();
+        params.put("VCurvSpeedC", targetvalue1.toStdString());
+        refresh();
+      } else {
+        QStringList list1 = QString::fromStdString(params.get("VCurvSpeedC")).split(",");
+        list_count1 = list1.size();
+      }
+      QString targetvalue2 = InputDialog::getText(tr("Set TS values with comma"), this, "CV: " + QString::fromStdString(params.get("VCurvSpeedC")), false, 1, QString::fromStdString(params.get("VCurvSpeedT")));
+      if (targetvalue2.length() > 0 && targetvalue2 != QString::fromStdString(params.get("VCurvSpeedT"))) {
+        QStringList list2 = targetvalue2.split(",");
+        list_count2 = list2.size();
+        params.put("VCurvSpeedT", targetvalue2.toStdString());
+        refresh();
+      } else {
+        QStringList list2 = QString::fromStdString(params.get("VCurvSpeedT")).split(",");
+        list_count2 = list2.size();
+      }
+      if (list_count1 != list_count2) {
+        ConfirmationDialog::alert(tr("Index count does not match. Check your input again."), this);
+      }
+    } else {
+      QString targetvalue1 = InputDialog::getText(tr("Set CV values with comma"), this, tr("Values are curve vector"), false, 1, QString::fromStdString(params.get("VCurvSpeedCMPH")));
+      if (targetvalue1.length() > 0 && targetvalue1 != QString::fromStdString(params.get("VCurvSpeedCMPH"))) {
+        QStringList list1 = targetvalue1.split(",");
+        list_count1 = list1.size();
+        params.put("VCurvSpeedCMPH", targetvalue1.toStdString());
+        refresh();
+      } else {
+        QStringList list1 = QString::fromStdString(params.get("VCurvSpeedCMPH")).split(",");
+        list_count1 = list1.size();
+      }
+      QString targetvalue2 = InputDialog::getText(tr("Set TS values with comma"), this, "CV: " + QString::fromStdString(params.get("VCurvSpeedCMPH")), false, 1, QString::fromStdString(params.get("VCurvSpeedTMPH")));
+      if (targetvalue2.length() > 0 && targetvalue2 != QString::fromStdString(params.get("VCurvSpeedTMPH"))) {
+        QStringList list2 = targetvalue2.split(",");
+        list_count2 = list2.size();
+        params.put("VCurvSpeedTMPH", targetvalue2.toStdString());
+        refresh();
+      } else {
+        QStringList list2 = QString::fromStdString(params.get("VCurvSpeedTMPH")).split(",");
+        list_count2 = list2.size();
+      }
+      if (list_count1 != list_count2) {
+        ConfirmationDialog::alert(tr("Index count does not match. Check your input again."), this);
+      }
+    }
+  });
+  refresh();
+}
+
+void VCurvSpeed::refresh() {
+  bool is_metric = params.getBool("IsMetric");
+  auto strs1 = QString::fromStdString(params.get("VCurvSpeedC"));
+  auto strs2 = QString::fromStdString(params.get("VCurvSpeedT"));
+  if (!is_metric) {
+    strs1 = QString::fromStdString(params.get("VCurvSpeedCMPH"));
+    strs2 = QString::fromStdString(params.get("VCurvSpeedTMPH"));
+  }
+  edit1.setText(QString::fromStdString(strs1.toStdString()));
+  edit2.setText(QString::fromStdString(strs2.toStdString()));
+  btn.setText(tr("EDIT"));
 }
