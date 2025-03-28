@@ -49,6 +49,11 @@ try:
 except:
   LANG_FILE='/data/openpilot/selfdrive/assets/addon/lang/events/main_en.txt'
   pass
+try:
+  IS_WAZE = Params().get("OPKRNaviSelect", encoding="utf8") == "3" or Params().get("OPKRNaviSelect", encoding="utf8") == "5"
+except:
+  IS_WAZE = False
+  pass
 
 # opkr
 def tr(line_num: int):
@@ -236,8 +241,8 @@ def below_steer_speed_alert(CP: car.CarParams, sm: messaging.SubMaster, metric: 
   return Alert(
     f"Steer Unavailable Below {get_display_speed(CP.minSteerSpeed, metric)}",
     "",
-    AlertStatus.userPrompt, AlertSize.small,
-    Priority.MID, VisualAlert.none, AudibleAlert.prompt, 0.4)
+    AlertStatus.userPrompt, AlertSize.none,
+    Priority.MID, VisualAlert.none, AudibleAlert.none, 0.4)
 
 
 def calibration_incomplete_alert(CP: car.CarParams, sm: messaging.SubMaster, metric: bool, soft_disable_time: int) -> Alert:
@@ -298,6 +303,14 @@ def can_error_alert(CP: car.CarParams, sm: messaging.SubMaster, metric: bool, so
       "",
       AlertStatus.normal, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .2, creation_delay=1.)
+
+def navi_alert(CP: car.CarParams, sm: messaging.SubMaster, metric: bool, soft_disable_time: int) -> Alert:
+  return Alert(
+    tr(193) if IS_WAZE else tr(95),
+    "",
+    AlertStatus.normal, AlertSize.small,
+    Priority.LOW, VisualAlert.none, AudibleAlert.none, .5, alert_rate=0.75)
+
 
 
 EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
@@ -701,11 +714,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.camSpeedDown: {
-    ET.WARNING: Alert(
-      tr(95),
-      "",
-      AlertStatus.normal, AlertSize.small,
-      Priority.LOW, VisualAlert.none, AudibleAlert.none, .5, alert_rate=0.75),
+    ET.WARNING: navi_alert,
   },
 
   EventName.standstillResButton: {
