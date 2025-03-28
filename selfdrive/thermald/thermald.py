@@ -28,7 +28,6 @@ from selfdrive.thermald.power_monitoring import PowerMonitoring
 from selfdrive.thermald.fan_controller import EonFanController, UnoFanController, TiciFanController
 from selfdrive.version import terms_version, training_version
 
-from random import randint
 
 ThermalStatus = log.DeviceState.ThermalStatus
 NetworkType = log.DeviceState.NetworkType
@@ -519,8 +518,7 @@ def thermald_thread(end_event, hw_queue):
 
     opkrwakeup = params.get_bool("OpkrWakeUp")
     if opkrwakeup and not wakeuprunning:
-      rcount = str(randint(1, 5))
-      cmd1 = '/data/openpilot/selfdrive/assets/addon/sound/wakeup_' + rcount + '.wav'
+      cmd1 = '/data/openpilot/selfdrive/assets/addon/sound/wakeup.wav'
       wakeuprunning = True
       wakeupstarted = sec_since_boot()
       subprocess.Popen([mediaplayer + 'mediaplayer', cmd1], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
@@ -528,7 +526,7 @@ def thermald_thread(end_event, hw_queue):
       if not opkrwakeup:
         wakeuprunning = False
         os.system("pkill -f mediaplayer")
-      elif sec_since_boot() - wakeupstarted > 180:
+      elif sec_since_boot() - wakeupstarted > 40:
         wakeuprunning = False
         Params().put_bool("OpkrWakeUp", False)
         os.system("pkill -f mediaplayer")
