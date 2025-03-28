@@ -529,6 +529,8 @@ DrivingPanel::DrivingPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new DepartChimeAtResume());
   layout->addWidget(new VariableCruiseToggle());
   layout->addWidget(new VariableCruiseLevel());
+  layout->addWidget(new CruiseSetwithRoadLimitSpeed());
+  layout->addWidget(new CruiseSetwithRoadLimitSpeedOffset());
   layout->addWidget(new CruisemodeSelInit());
   layout->addWidget(new LaneChangeSpeed());
   layout->addWidget(new LaneChangeDelay());
@@ -585,6 +587,7 @@ DeveloperPanel::DeveloperPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new DebugUiOneToggle());
   layout->addWidget(new DebugUiTwoToggle());
   layout->addWidget(new DebugUiThreeToggle());
+  layout->addWidget(new OPKRDebug());
   layout->addWidget(new ShowErrorToggle());
   layout->addWidget(new LongLogToggle());
   layout->addWidget(new PrebuiltToggle());
