@@ -82,7 +82,7 @@ class DesireHelper:
     v_ego = carstate.vEgo
     one_blinker = carstate.leftBlinker != carstate.rightBlinker
 
-    below_lane_change_speed = v_ego < LANE_CHANGE_SPEED_MIN
+    below_lane_change_speed = (v_ego < LANE_CHANGE_SPEED_MIN) or (LANE_CHANGE_SPEED_MIN == -1)
 
     left_edge_prob = np.clip(1.0 - md.roadEdgeStds[0], 0.0, 1.0)
     left_nearside_prob = md.laneLineProbs[0]
@@ -126,8 +126,12 @@ class DesireHelper:
         self.lane_change_ll_prob = 1.0
         self.lane_change_wait_timer = 0 if not self.ready_to_change else self.lane_change_auto_delay
         if self.lane_change_adjust_enable:
-          self.lane_change_adjust_new = interp(v_ego, self.lane_change_adjust_vel, self.lane_change_adjust)
-
+          if controlstate.curvature > 0.0005 and self.lane_change_direction == LaneChangeDirection.left: # left curve
+            self.lane_change_adjust_new = min(2.0, interp(v_ego, self.lane_change_adjust_vel, self.lane_change_adjust)*1.5)
+          elif controlstate.curvature < -0.0005 and self.lane_change_direction == LaneChangeDirection.right: # right curve
+            self.lane_change_adjust_new = min(2.0, interp(v_ego, self.lane_change_adjust_vel, self.lane_change_adjust)*1.5)
+          else:
+            self.lane_change_adjust_new = interp(v_ego, self.lane_change_adjust_vel, self.lane_change_adjust)
       # LaneChangeState.preLaneChange
       elif self.lane_change_state == LaneChangeState.preLaneChange:
         self.lane_change_wait_timer += DT_MDL
