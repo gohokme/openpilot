@@ -314,6 +314,8 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"AutoResLimitTime", PERSISTENT},
     {"VCurvSpeedC", PERSISTENT},
     {"VCurvSpeedT", PERSISTENT},
+    {"VCurvSpeedCMPH", PERSISTENT},
+    {"VCurvSpeedTMPH", PERSISTENT},
     {"OCurvSpeedC", PERSISTENT},
     {"OCurvSpeedT", PERSISTENT},
     {"OSMCustomSpeedLimitC", PERSISTENT},
@@ -392,6 +394,10 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"CruiseGapBySpdOn", PERSISTENT},
     {"CruiseGapBySpdSpd", PERSISTENT},
     {"CruiseGapBySpdGap", PERSISTENT},
+    {"CruiseSetwithRoadLimitSpeedEnabled", PERSISTENT},
+    {"CruiseSetwithRoadLimitSpeedOffset", PERSISTENT},
+    {"OPKRDebug", PERSISTENT},
+    {"SetSpeedFive", PERSISTENT},
 };
 
 } // namespace
