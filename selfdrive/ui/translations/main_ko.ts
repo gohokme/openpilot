@@ -2800,8 +2800,8 @@
     </message>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="6374"/>
-        <source>Vision Only, Vision+Radar, Radar Only, OPKR Custom</source>
-        <translation>비전전용, 비전+레이더, 레이더전용, OPKR 커스텀</translation>
+        <source>Vision Only, Radar Only, OPKR(Radar+Vision)</source>
+        <translation>비전전용, 레이더전용, OPKR(레이더+비전)</translation>
     </message>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="6432"/>
@@ -2810,18 +2810,13 @@
     </message>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="6434"/>
-        <source>Vision+Radar</source>
-        <translation>비전+레이더</translation>
-    </message>
-    <message>
-        <location filename="../qt/widgets/opkr.cc" line="6436"/>
         <source>Radar Only</source>
         <translation>레이더전용</translation>
     </message>
     <message>
-        <location filename="../qt/widgets/opkr.cc" line="6438"/>
-        <source>OPKR Custom</source>
-        <translation>OPKR 커스텀</translation>
+        <location filename="../qt/widgets/opkr.cc" line="6436"/>
+        <source>OPKR(Radar+Vision)</source>
+        <translation>OPKR(레이더+비전)</translation>
     </message>
 </context>
 <context>
@@ -2879,13 +2874,13 @@
     <name>OSMCustomSpeedLimitUD</name>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="6574"/>
-        <source>OSMCustomSpeedLimit([SL] [TargetSpeed])</source>
-        <translation>OSM임의속도제한([SL] [목표속도])</translation>
+        <source>CustomSpeedLimit([SL] [TargetSpeed])</source>
+        <translation>커스텀속도제한([SL] [목표속도])</translation>
     </message>
     <message>
         <location filename="../qt/widgets/opkr.cc" line="6574"/>
-        <source>Set the offset speed according to speed limit of OSM. (interpolation value)</source>
-        <translation>OSM의 제한속도에 따른 오프셋 속도를 설정합니다.(중간값은 보간값)</translation>
+        <source>Set the offset speed according to speed limit of OSM or Waze. (interpolation value)</source>
+        <translation>OSM 혹은 Waze의 제한속도에 따른 오프셋 속도를 설정합니다.(중간값은 보간값)</translation>
     </message>
 </context>
 <context>
@@ -4101,6 +4096,58 @@
         <location filename="../qt/widgets/opkr.h" line="952"/>
         <source>Cruise Gap is changeable by vehicle speed.</source>
         <translation>차량속도에 따른 크루즈갭 변경기능을 사용합니다.(변경 임계속도값 근처 버퍼(5km/h) 적용 포함)</translation>
+    </message>
+</context>
+<context>
+    <name>CruiseSetwithRoadLimitSpeed</name>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="964"/>
+        <source>CruiseSet with RoadLimitSpeed</source>
+        <translation>도로제한속도 크루즈셋</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="964"/>
+        <source>Cruise Set with RoadLimitSpeed(Ext Navi)</source>
+        <translation>크루즈 세팅 속도를 도로제한속도+Offset 값을 넘지 않도록 설정합니다.</translation>
+    </message>
+</context>
+<context>
+    <name>CruiseSetwithRoadLimitSpeedOffset</name>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="8548"/>
+        <source>CruiseSet RoadLimitSpd Ofs</source>
+        <translation>크루즈 도로제한속도 오프셋</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.cc" line="8548"/>
+        <source>CruiseSet with RoadLimitSpeed Offset Value. This will add offset to navi road limit speed.</source>
+        <translation>크루즈속도를 도로제한속도에 오프셋 값을 더해 최대 제한 속도를 설정합니다.</translation>
+    </message>
+</context>
+<context>
+    <name>OPKRDebug</name>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="976"/>
+        <source>OPKR Debug Mode</source>
+        <translation>OPKR 디버그 모드</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="976"/>
+        <source>Run OPKR Debug Mode</source>
+        <translation>OPKR 디버그 모드를 실행합니다.</translation>
+    </message>
+</context>
+<context>
+    <name>SetSpeedByFive</name>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="993"/>
+        <source>SetSpeed Change by 5</source>
+        <translation>MAX 설정속도 5단위 증감</translation>
+    </message>
+    <message>
+        <location filename="../qt/widgets/opkr.h" line="993"/>
+        <source>MAX Speed can be adjusted by 5. Cruise Set Speed will be set as same with MAX quickly.</source>
+        <translation>MAX 스피드를 5씩 증감합니다. 크루즈 스피드도 다른 조건이 없다면 같이 동기화 됩니다.</translation>
     </message>
 </context>
 </TS>
