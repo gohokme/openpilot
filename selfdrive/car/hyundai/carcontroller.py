@@ -185,7 +185,7 @@ class CarController():
     self.enable_steer_more = self.params.get_bool("AvoidLKASFaultBeyond")
     self.no_mdps_mods = self.params.get_bool("NoSmartMDPS")
 
-    #self.user_specific_feature = int(self.params.get("UserSpecificFeature", encoding="utf8"))
+    self.user_specific_feature = int(self.params.get("UserSpecificFeature", encoding="utf8"))
 
     self.gap_by_spd_on = self.params.get_bool("CruiseGapBySpdOn")
     self.gap_by_spd_spd = list(map(int, Params().get("CruiseGapBySpdSpd", encoding="utf8").split(',')))
@@ -197,6 +197,10 @@ class CarController():
     self.gap_by_spd_gap2 = False
     self.gap_by_spd_gap3 = False
     self.gap_by_spd_gap4 = False
+    self.gap_by_spd_on_sw = False
+    self.gap_by_spd_on_sw_trg = True
+    self.gap_by_spd_on_sw_cnt = 0
+    self.gap_by_spd_on_sw_cnt2 = 0
 
     self.radar_disabled_conf = self.params.get_bool("RadarDisable")
     self.prev_cruiseButton = 0
@@ -234,6 +238,7 @@ class CarController():
     self.e2e_standstill = False
     self.e2e_standstill_stat = False
     self.e2e_standstill_timer = 0
+    self.e2e_standstill_timer_buf = 0
 
     self.str_log2 = 'MultiLateral'
     if CP.lateralTuning.which() == 'pid':
@@ -346,12 +351,12 @@ class CarController():
         lkas_active = c.active
       # disable when temp fault is active, or below LKA minimum speed
       elif self.opkr_maxanglelimit == 90:
-        lkas_active = c.active and abs(CS.out.steeringAngleDeg) < self.opkr_maxanglelimit and CS.out.gearShifter == GearShifter.drive
+        lkas_active = c.active and abs(CS.out.steeringAngleDeg) < self.opkr_maxanglelimit and (CS.out.gearShifter == GearShifter.drive or self.user_specific_feature == 11)
       elif self.opkr_maxanglelimit > 90:
         str_angle_limit = interp(CS.out.vEgo * CV.MS_TO_KPH, [0, 20], [self.opkr_maxanglelimit+60, self.opkr_maxanglelimit])
-        lkas_active = c.active and abs(CS.out.steeringAngleDeg) < str_angle_limit and CS.out.gearShifter == GearShifter.drive
+        lkas_active = c.active and abs(CS.out.steeringAngleDeg) < str_angle_limit and (CS.out.gearShifter == GearShifter.drive or self.user_specific_feature == 11)
       else:
-        lkas_active = c.active and CS.out.gearShifter == GearShifter.drive
+        lkas_active = c.active and (CS.out.gearShifter == GearShifter.drive or self.user_specific_feature == 11)
       if CS.mdps_error_cnt > self.to_avoid_lkas_fault_max_frame:
         self.cut_steer = True
       elif self.cut_steer_frames > 1:
@@ -415,12 +420,14 @@ class CarController():
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
     enabled_speed = 38 if CS.is_set_speed_in_mph else 60
-    if clu11_speed > enabled_speed or not lkas_active or CS.out.gearShifter != GearShifter.drive:
+    if clu11_speed > enabled_speed or not lkas_active:
       enabled_speed = clu11_speed
 
     if CS.cruise_active: # to toggle lkas, hold gap button for 1 sec
       if CS.cruise_buttons == 3:
         self.lkas_onoff_counter += 1
+        self.gap_by_spd_on_sw = True
+        self.gap_by_spd_on_sw_cnt2 = 0
         if self.lkas_onoff_counter > 100:
           self.lkas_onoff_counter = 0
           self.lkas_temp_disabled = not self.lkas_temp_disabled
@@ -432,10 +439,26 @@ class CarController():
         if self.lkas_temp_disabled_timer:
           self.lkas_temp_disabled_timer -= 1
         self.lkas_onoff_counter = 0
+        if self.gap_by_spd_on_sw:
+          self.gap_by_spd_on_sw = False
+          self.gap_by_spd_on_sw_cnt += 1
+          if self.gap_by_spd_on_sw_cnt > 4: #temporary disable of auto gap if you press gap button 5 times quickly.
+            self.gap_by_spd_on_sw_trg = not self.gap_by_spd_on_sw_trg
+            self.gap_by_spd_on_sw_cnt = 0
+            self.gap_by_spd_on_sw_cnt2 = 0
+        elif self.gap_by_spd_on_sw_cnt:
+          self.gap_by_spd_on_sw_cnt2 += 1
+          if self.gap_by_spd_on_sw_cnt2 > 20:
+            self.gap_by_spd_on_sw_cnt = 0
+            self.gap_by_spd_on_sw_cnt2 = 0
     else:
       self.lkas_onoff_counter = 0
       if self.lkas_temp_disabled_timer:
         self.lkas_temp_disabled_timer -= 1
+      self.gap_by_spd_on_sw_cnt = 0
+      self.gap_by_spd_on_sw_cnt2 = 0
+      self.gap_by_spd_on_sw = False
+      self.gap_by_spd_on_sw_trg = True
 
     can_sends = []
 
@@ -537,13 +560,13 @@ class CarController():
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0
       self.standstill_res_button = False
-    elif self.opkr_variablecruise and CS.acc_active and CS.out.cruiseState.modeSel > 0:
+    elif self.opkr_variablecruise and CS.acc_active:
+      btn_signal = self.NC.update(CS, path_plan)
       self.on_speed_control = self.NC.onSpeedControl
       self.on_speed_bump_control = self.NC.onSpeedBumpControl
       self.curv_speed_control = self.NC.curvSpeedControl
       self.cut_in_control = self.NC.cutInControl
       self.driver_scc_set_control = self.NC.driverSccSetControl
-      btn_signal = self.NC.update(CS, path_plan)
       if self.opkr_cruisegap_auto_adj and not self.gap_by_spd_on:
         # gap restore
         if self.switch_timer > 0:
@@ -563,7 +586,7 @@ class CarController():
         else:
           self.cruise_gap_adjusting = False
       if not self.cruise_gap_adjusting:
-        if not self.gap_by_spd_on:
+        if not self.gap_by_spd_on or not self.gap_by_spd_on_sw_trg:
           if 0 < CS.lead_distance <= 149 and CS.lead_objspd < 0 and self.try_early_stop and CS.cruiseGapSet != 4.0 and CS.clu_Vanz > 30 and \
            0 < self.sm['longitudinalPlan'].e2eX[12] < 120 and (self.sm['longitudinalPlan'].stopLine[12] < 100 or CS.lead_objspd < -4):
             if not self.try_early_stop_retrieve:
@@ -579,9 +602,15 @@ class CarController():
                 self.resume_cnt = 0
                 self.switch_timer = randint(30, 36)
           elif btn_signal != None:
-            can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal)) if not self.longcontrol \
-            else can_sends.append(create_clu11(self.packer, frame, CS.clu11, btn_signal, clu11_speed, CS.CP.sccBus))
-            self.resume_cnt += 1
+            if self.switch_timer > 0:
+              self.switch_timer -= 1
+            else:
+              can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal)) if not self.longcontrol \
+              else can_sends.append(create_clu11(self.packer, frame, CS.clu11, btn_signal, clu11_speed, CS.CP.sccBus))
+              self.resume_cnt += 1
+              if self.resume_cnt >= randint(6, 8):
+                self.resume_cnt = 0
+                self.switch_timer = randint(30, 36)
           elif 0 < CS.lead_distance <= 149 and not self.cruise_gap_set_init and self.try_early_stop and self.try_early_stop_retrieve and \
            CS.cruiseGapSet != self.try_early_stop_org_gap and \
            (CS.clu_Vanz <= 20 or (CS.lead_objspd >= 0 and self.sm['longitudinalPlan'].e2eX[12] > 50 and self.sm['longitudinalPlan'].stopLine[12] > 100 and CS.clu_Vanz > 20)):
@@ -598,7 +627,7 @@ class CarController():
               self.try_early_stop_retrieve = False
           else:
             self.resume_cnt = 0
-        elif self.gap_by_spd_on:
+        elif self.gap_by_spd_on and self.gap_by_spd_on_sw_trg:
           if 0 < CS.lead_distance <= 149 and CS.lead_objspd < 0 and self.try_early_stop and CS.cruiseGapSet != 4.0 and CS.clu_Vanz > 30 and \
            0 < self.sm['longitudinalPlan'].e2eX[12] < 120 and (self.sm['longitudinalPlan'].stopLine[12] < 100 or CS.lead_objspd < -4):
             if not self.try_early_stop_retrieve:
@@ -669,10 +698,15 @@ class CarController():
           elif btn_signal != None:
             if self.switch_timer2 > 0 and self.try_early_stop_retrieve:
               self.switch_timer2 -= 1
+            elif self.switch_timer > 0:
+              self.switch_timer -= 1
             else:
               can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal)) if not self.longcontrol \
               else can_sends.append(create_clu11(self.packer, frame, CS.clu11, btn_signal, clu11_speed, CS.CP.sccBus))
-            self.resume_cnt += 1
+              self.resume_cnt += 1
+              if self.resume_cnt >= randint(6, 8):
+                self.resume_cnt = 0
+                self.switch_timer = randint(30, 36)
             self.gap_by_spd_gap1 = False
             self.gap_by_spd_gap2 = False
             self.gap_by_spd_gap3 = False
@@ -731,6 +765,7 @@ class CarController():
       self.e2e_standstill = False
       self.e2e_standstill_stat = False
       self.e2e_standstill_timer = 0
+      self.e2e_standstill_timer_buf = 0
     if CS.cruise_buttons == 4:
       self.cancel_counter += 1
       self.auto_res_starting = False
@@ -750,6 +785,7 @@ class CarController():
       self.e2e_standstill = False
       self.e2e_standstill_stat = False
       self.e2e_standstill_timer = 0
+      self.e2e_standstill_timer_buf = 0
       if self.res_speed_timer > 0:
         self.res_speed_timer -= 1
         self.auto_res_starting = False
@@ -778,17 +814,20 @@ class CarController():
             self.e2e_standstill = False
             self.e2e_standstill_stat = False
             self.e2e_standstill_timer = 0
+            self.e2e_standstill_timer_buf = 0
           elif self.e2e_standstill_stat and self.sm['longitudinalPlan'].e2eX[12] > 30 and self.sm['longitudinalPlan'].stopLine[12] < 10 and CS.clu_Vanz == 0:
             self.e2e_standstill = True
             self.e2e_standstill_stat = False
             self.e2e_standstill_timer = 0
+            self.e2e_standstill_timer_buf += 300
           elif 0 < self.sm['longitudinalPlan'].e2eX[12] < 10 and self.sm['longitudinalPlan'].stopLine[12] < 10 and CS.clu_Vanz == 0:
             self.e2e_standstill_timer += 1
-            if self.e2e_standstill_timer > 300:
+            if self.e2e_standstill_timer > (300 + self.e2e_standstill_timer_buf):
               self.e2e_standstill_timer = 101
               self.e2e_standstill_stat = True
           else:
             self.e2e_standstill_timer = 0
+            self.e2e_standstill_timer_buf = 0
         except:
           pass
 
@@ -806,7 +845,7 @@ class CarController():
     t_speed = 20 if CS.is_set_speed_in_mph else 30
     if self.auto_res_timer > 0:
       self.auto_res_timer -= 1
-    elif self.model_speed > 95 and self.cancel_counter == 0 and not CS.cruise_active and not CS.out.brakeLights and round(CS.VSetDis) >= t_speed and \
+    elif self.model_speed > (60 if CS.is_set_speed_in_mph else 95) and self.cancel_counter == 0 and not CS.cruise_active and not CS.out.brakeLights and round(CS.VSetDis) >= t_speed and \
      (1 < CS.lead_distance < 149 or round(CS.clu_Vanz) > t_speed) and round(CS.clu_Vanz) >= 3 and self.cruise_init and \
      self.opkr_cruise_auto_res and opkr_cruise_auto_res_condition and (self.auto_res_limit_sec == 0 or self.auto_res_limit_timer < self.auto_res_limit_sec) and \
      (self.auto_res_delay == 0 or self.auto_res_delay_timer >= self.auto_res_delay):
@@ -963,14 +1002,11 @@ class CarController():
         radar_recog = (0 < CS.lead_distance <= 149)
         if self.joystick_debug_mode:
           accel = actuators.accel
-        elif self.radar_helper_option == 0:
-          if 0 < CS.lead_distance <= 4.0: # use radar by force to stop anyway below 4.0m if lead car is detected.
-            stock_weight = interp(CS.lead_distance, [2.5, 4.0], [1., 0.])
-            accel = accel * (1. - stock_weight) + aReqValue * stock_weight
-          elif 0.1 < self.dRel < 6.0 and self.vRel < 0:
+        elif self.radar_helper_option == 0: # Vision Only
+          if 0.1 < self.dRel < 6.0 and self.vRel < 0:
             accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [0.9, 3.0], [1.0, 3.0]))
             self.stopped = False
-          elif 0.1 < self.dRel < 6.0:
+          elif 0.1 < self.dRel < 5.0:
             accel = min(-0.5, faccel*0.3)
             if stopping:
               self.stopped = True
@@ -981,42 +1017,9 @@ class CarController():
             pass
           else:
             self.stopped = False
-            accel = aReqValue
-        elif self.radar_helper_option == 1:
-          if 0 < CS.lead_distance <= 149:
-            # neokii's logic, opkr mod
-            stock_weight = 0.0
-            if aReqValue > 0.0:
-              stock_weight = interp(CS.lead_distance, [3.5, 8.0, 13.0, 25.0], [0.5, 1.0, 1.0, 0.0])
-            elif aReqValue < 0.0 and self.stopping_dist_adj_enabled:
-              stock_weight = interp(CS.lead_distance, [4.5, 8.0, 20.0, 25.0], [0.2, 1.0, 1.0, 0.0])
-            elif aReqValue < 0.0:
-              stock_weight = interp(CS.lead_distance, [3.5, 25.0], [1.0, 0.0])
-            else:
-              stock_weight = 0.0
-            accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
-          else:
-            if 0 < CS.lead_distance <= 4.0: # use radar by force to stop anyway below 4.0m if lead car is detected.
-              stock_weight = interp(CS.lead_distance, [2.5, 4.0], [1., 0.])
-              accel = accel * (1. - stock_weight) + aReqValue * stock_weight
-            elif 0.1 < self.dRel < 6.0 and self.vRel < 0:
-              accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [0.9, 3.0], [1.0, 3.0]))
-              self.stopped = False
-            elif 0.1 < self.dRel < 6.0:
-              accel = min(-0.5, faccel*0.3)
-              if stopping:
-                self.stopped = True
-              else:
-                self.stopped = False
-            elif 0.1 < self.dRel:
-              self.stopped = False
-              pass
-            else:
-              self.stopped = False
-              accel = aReqValue
-        elif self.radar_helper_option == 2:
+        elif self.radar_helper_option == 1: # Radar Only
           accel = aReqValue
-        elif self.radar_helper_option == 3:
+        elif self.radar_helper_option >= 2: # OPKR Custom(Radar+Vision), more smooth slowdown for cut-in or encountering being decellerated car.
           if 0 < CS.lead_distance <= 149:
             stock_weight = 0.0
             self.smooth_start = False
@@ -1041,11 +1044,11 @@ class CarController():
             elif aReqValue >= 0.0:
               # accel = interp(CS.lead_distance, [14.0, 15.0], [max(accel, aReqValue, faccel), aReqValue])
               dRel1 = self.dRel if self.dRel > 0 else CS.lead_distance
-              if ((CS.lead_distance - dRel1 > 3.0) or self.NC.cutInControl) and self.stopping_dist_adj_enabled and accel < 0:
+              if ((CS.lead_distance - dRel1 > 3.0) or self.NC.cutInControl) and accel < 0:
                 if aReqValue < accel:
                   accel = interp(lead_objspd, [-1, 0, 5], [aReqValue, aReqValue, accel])
                 else:
-                  accel = accel
+                  accel = interp(self.dRel, [0, 40], [accel*0.1, accel*0.7])
               else:
                 accel = aReqValue
             elif aReqValue < 0.0 and CS.lead_distance < self.stoppingdist and accel >= aReqValue and lead_objspd <= 0 and self.stopping_dist_adj_enabled:
@@ -1053,12 +1056,13 @@ class CarController():
                 accel = self.accel - (DT_CTRL * 4.0)
               elif CS.lead_distance < self.stoppingdist:
                 accel = self.accel - (DT_CTRL * interp(CS.out.vEgo, [0.0, 1.0, 2.0], [0.05, 1.0, 5.0]))
-            elif aReqValue < 0.0 and self.stopping_dist_adj_enabled:
+            elif aReqValue < 0.0:
               dRel2 = self.dRel if self.dRel > 0 else CS.lead_distance
-              if ((CS.lead_distance - dRel2 > 3.0) or self.NC.cutInControl) and accel < 0:
-                stock_weight = 0.3
-                if aReqValue < accel:
-                  stock_weight = interp(lead_objspd, [-1, 0, 5], [1.0, 1.0, 0.0])
+              if ((CS.lead_distance - dRel2 > 3.0) or self.NC.cutInControl) and accel < 0 and not self.ed_rd_diff_on:
+                self.ed_rd_diff_on = True
+                self.ed_rd_diff_on_timer = min(400, int(self.dRel * 5))
+                self.ed_rd_diff_on_timer2 = min(400, int(self.dRel * 5))
+                stock_weight = 1.0
               elif ((dRel2 - CS.lead_distance > 3.0) or self.NC.cutInControl) and not self.ed_rd_diff_on:
                 self.ed_rd_diff_on = True
                 self.ed_rd_diff_on_timer = min(400, int(self.dRel * 10))
@@ -1074,11 +1078,13 @@ class CarController():
                   self.ed_rd_diff_on = False
                 self.ed_rd_diff_on_timer = 0
                 self.ed_rd_diff_on_timer2 = 0
-                stock_weight = interp(abs(lead_objspd), [1.0, 4.0, 8.0, 20.0, 50.0], [0.2, 0.3, 1.0, 0.9, 0.2])
+                stock_weight = interp(abs(lead_objspd), [1.0, 5.0, 10.0, 20.0, 50.0], [0.15, 0.3, 1.0, 0.9, 0.2])
                 if aReqValue <= accel:
                   self.vrel_delta_timer = 0
                   self.vrel_delta_timer3 = 0
                   stock_weight = min(1.0, interp(CS.out.vEgo, [7.0, 30.0], [stock_weight, stock_weight*5.0]))
+                  if not self.stopping_dist_adj_enabled:
+                    stock_weight = min(1.0, interp(CS.lead_distance, [0.0, 10.0], [stock_weight*5.0, stock_weight]))
                 elif aReqValue > accel:
                   if self.vrel_delta < -5 and self.vrel_delta_timer == 0:
                     self.vrel_delta_timer = min(400, int(self.dRel*10))
@@ -1093,9 +1099,9 @@ class CarController():
                     stock_weight = interp(abs(lead_objspd), [1.0, 10.0], [1.0, 0.0])
               accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
               accel = min(accel, -0.5) if CS.lead_distance <= 4.5 and not CS.out.standstill else accel
-            elif aReqValue < 0.0:
-              stock_weight = interp(CS.lead_distance, [6.0, 10.0, 18.0, 25.0, 32.0], [1.0, 0.85, 1.0, 0.4, 1.0])
-              accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
+            # elif aReqValue < 0.0:
+            #   stock_weight = interp(CS.lead_distance, [6.0, 10.0, 18.0, 25.0, 32.0], [1.0, 0.85, 1.0, 0.4, 1.0])
+            #   accel = accel * (1.0 - stock_weight) + aReqValue * stock_weight
             else:
               stock_weight = 0.0
               self.change_accel_fast = False
@@ -1111,7 +1117,14 @@ class CarController():
               self.stopped = False
           elif 0.1 < self.dRel < 80:
             self.stopped = False
-            pass
+            vvrel = self.vRel*3.6
+            vvrel_weight = interp(vvrel, [-35, 0], [0.2, 0.4])
+            if accel <= 0 and aReqValue <= 0:
+              accel = (accel*(1-vvrel_weight)) + (aReqValue*vvrel_weight)
+            elif accel <= 0 and aReqValue > 0 and CS.clu_Vanz > 30:
+              accel = (aReqValue*(1-vvrel_weight)) + (accel*vvrel_weight)
+            else:
+              pass
           else:
             self.stopped = False
             if self.stopsign_enabled:
@@ -1137,7 +1150,7 @@ class CarController():
         self.aq_value_raw = aReqValue
         can_sends.append(create_scc11(self.packer, frame, set_speed, lead_visible, self.scc_live, self.dRel, self.vRel, self.yRel, 
          self.car_fingerprint, CS.out.vEgo * CV.MS_TO_KPH, self.acc_standstill, self.gapsettingdance, self.stopped, radar_recog, CS.scc11))
-        if (CS.brake_check or CS.cancel_check) and self.car_fingerprint != CAR.NIRO_EV_DE:
+        if (CS.brake_check or CS.cancel_check) and self.car_fingerprint not in (CAR.NIRO_EV_DE, CAR.AVANTE_AD):
           can_sends.append(create_scc12(self.packer, accel, enabled, self.scc_live, CS.out.gasPressed, 1, 
            CS.out.stockAeb, self.car_fingerprint, CS.out.vEgo * CV.MS_TO_KPH, self.stopped, self.acc_standstill, radar_recog, self.scc12_cnt, CS.scc12))
         else:
@@ -1187,7 +1200,7 @@ class CarController():
       # self.to_avoid_lkas_fault_max_frame = int(self.params.get("AvoidLKASFaultMaxFrame", encoding="utf8"))
       # self.e2e_long_enabled = self.params.get_bool("E2ELong")
       # self.stopsign_enabled = self.params.get_bool("StopAtStopSign")
-      self.gap_by_spd_on = self.params.get_bool("CruiseGapBySpdOn")
+      # self.gap_by_spd_on = self.params.get_bool("CruiseGapBySpdOn")
       if self.params.get_bool("OpkrLiveTunePanelEnable"):
         if CS.CP.lateralTuning.which() == 'pid':
           self.str_log2 = 'T={:0.2f}/{:0.3f}/{:0.1f}/{:0.5f}'.format(float(Decimal(self.params.get("PidKp", encoding="utf8"))*Decimal('0.01')), \
@@ -1222,4 +1235,4 @@ class CarController():
 
     self.lkas11_cnt += 1
 
-    return new_actuators, can_sends, safetycam_speed, self.lkas_temp_disabled
+    return new_actuators, can_sends, safetycam_speed, self.lkas_temp_disabled, (self.gap_by_spd_on_sw_trg and self.gap_by_spd_on)
