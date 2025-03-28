@@ -169,6 +169,8 @@ def manager_init() -> None:
     ("AutoResLimitTime", "0"),
     ("VCurvSpeedC", "30,50,70,90"),
     ("VCurvSpeedT", "43,58,73,87"),
+    ("VCurvSpeedCMPH", "20,30,45,60"),
+    ("VCurvSpeedTMPH", "27,36,46,57"),
     ("OCurvSpeedC", "30,40,50,60,70"),
     ("OCurvSpeedT", "35,45,60,70,80"),
     ("OSMCustomSpeedLimitC", "30,40,50,60,70,90"),
@@ -237,6 +239,9 @@ def manager_init() -> None:
     ("CruiseGapBySpdOn", "0"),
     ("CruiseGapBySpdSpd", "25,65,130"),
     ("CruiseGapBySpdGap", "1,2,3,4"),
+    ("CruiseSetwithRoadLimitSpeedEnabled", "0"),
+    ("CruiseSetwithRoadLimitSpeedOffset", "0"),
+    ("SetSpeedFive", "0"),
    ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))
