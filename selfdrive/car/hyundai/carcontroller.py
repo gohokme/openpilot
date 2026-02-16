@@ -875,6 +875,7 @@ class CarController():
       self.acc_standstill_timer = 0
 
     #g90 수정
+    #원본 if CS.CP.mdpsBus: # send mdps12 to LKAS to prevent LKAS error
     if True: # send mdps12 to LKAS to prevent LKAS error
       can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
