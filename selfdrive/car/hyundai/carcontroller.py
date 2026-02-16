@@ -876,7 +876,8 @@ class CarController():
 
     #g90 수정
     #원본 if CS.CP.mdpsBus: # send mdps12 to LKAS to prevent LKAS error
-    if True: # send mdps12 to LKAS to prevent LKAS error
+    #또는 if True: 아래 변경해볼것
+    if self.car_fingerprint in FEATURES["send_mdps12"]:  # send mdps12 to LKAS to prevent LKAS error
       can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
     # # tester present - w/ no response (keeps radar disabled)
