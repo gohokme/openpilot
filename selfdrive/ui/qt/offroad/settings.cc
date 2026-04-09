@@ -497,9 +497,9 @@ UIPanel::UIPanel(QWidget *parent) : QFrame(parent) {
   layout->addWidget(new MonitorEyesThreshold());
   layout->addWidget(new NormalEyesThreshold());
   layout->addWidget(new BlinkThreshold());
-  layout->addWidget(new OPKRNaviSelect());
+  #layout->addWidget(new OPKRNaviSelect());
   layout->addWidget(new ExternalDeviceIP());
-  layout->addWidget(new RunNaviOnBootToggle());
+  #layout->addWidget(new RunNaviOnBootToggle());
   layout->addWidget(new OPKRServerSelect());
   layout->addWidget(new OPKRServerAPI());
   layout->addWidget(new MapboxEnabledToggle());
